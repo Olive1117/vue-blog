@@ -1,11 +1,21 @@
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <router-view />
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useUserStore } from './stores/user'
 
-<style scoped></style>
+const userStore = useUserStore()
+onMounted(() => {
+  if (userStore.isLoggedIn) {
+    userStore.fetchUserInfo()
+  }
+})
+</script>
+
+<style lang="scss">
+#app {
+  min-height: 100vh;
+  color: #2c3e50;
+}
+</style>

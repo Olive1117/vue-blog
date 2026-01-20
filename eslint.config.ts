@@ -19,5 +19,23 @@ export default defineConfigWithVueTs(
   ...pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
 
+  {
+    name: 'app/custom-vue-rules',
+    files: ['**/*.vue'],
+    rules: {
+      'vue/no-parsing-error': [
+        'error',
+        {
+          // 'missing-whitespace-between-attributes': false, // 禁用属性间缺少空格的解析错误检查
+        },
+      ],
+      'vue/valid-attribute-name': [
+        'error',
+        {
+          allowPatterns: ['^-.+'],
+        },
+      ],
+    },
+  },
   skipFormatting,
 )

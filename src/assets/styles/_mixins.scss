@@ -1,0 +1,54 @@
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:list';
+
+@mixin respond-to($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @media (max-width: map.get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint: #{$breakpoint}.";
+  }
+}
+
+@mixin ellipsis($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+  }
+}
+
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+}
+
+/* 清除浮动 (虽然现在多用 Flex，但有些布局仍需备用) */
+@mixin clearfix {
+  &::after {
+    clear: both;
+    display: table;
+    content: '';
+  }
+}
+
+// 核心逻辑：生成颜色阶梯
+@mixin set-color-types($type, $color) {
+  --el-color-#{$type}: #{$color};
+  --el-color-#{$type}-dark-1: #{color.mix($color, #000, 90%)};
+  --el-color-#{$type}-dark-2: #{color.mix($color, #000, 80%)};
+
+  @for $i from 1 through 9 {
+    --el-color-#{$type}-light-#{$i}: #{color.mix($color, #fff, (1 - $i * 0.1) * 100%)};
+  }
+}

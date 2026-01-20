@@ -1,0 +1,23 @@
+$color-primary: #42b983;
+$input-height: (
+  'large': 8px,
+  'default': 6px,
+  'small': 4px,
+);
+
+/* 响应式断点定义 (用于 Mixins) */
+$breakpoints: (
+  'sm': 640px,
+  'md': 768px,
+  'lg': 1080px,
+  'xl': 1280px,
+);
+$colors: (
+  // 'primary': #409eff,
+  'primary': #39c5bb,
+  'success': #67c23a,
+  'warning': #e6a23c,
+  'danger': #f56c6c,
+  // 'error': #f56c6c,
+  'info': #909399
+);
