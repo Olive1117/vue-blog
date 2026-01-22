@@ -1,9 +1,15 @@
 <template>
-  <div class="profile-card">
-    <h1>hello world olive!</h1>
-    <BaseButton @click="userStore.fetchUserInfo()">加载个人信息</BaseButton>
-    <div flex flex-col>
-      <BaseAvatar mxauto :alt="userinfo?.avatar" type="primary" circle></BaseAvatar>
+  <div bg-white p4 gap4 flex flex-col class="profile-card">
+    <!-- <BaseButton @click="userStore.fetchUserInfo()">加载个人信息</BaseButton> -->
+    <div flex flex-col gap2>
+      <BaseAvatar
+        w32
+        text-size-6xl
+        mxauto
+        :value="userinfo?.avatar"
+        type="primary"
+        circle
+      ></BaseAvatar>
       <div>
         <div i-tabler-user></div>
         {{ userinfo?.username }}
@@ -49,6 +55,7 @@
         {{ useDateFormat(userinfo?.updated_at, 'YYYY-MM-DD') }}
       </div>
     </div>
+    <div break-all>当前token: {{ userStore.token }}</div>
     <BaseButton @click="console.log(userinfo)">打印</BaseButton>
   </div>
 </template>

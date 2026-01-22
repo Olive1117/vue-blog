@@ -34,10 +34,10 @@ const {
   tag = 'button',
   circle,
   icon,
-  type = 'default',
+  theme = 'default',
 } = defineProps<{
   tag?: 'button' | 'RouterLink' | 'link' | Component
-  type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
+  theme?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
   icon?: string
   circle?: boolean
   disabled?: boolean
@@ -49,9 +49,9 @@ const typeClass = computed(() => {
     warning: 'bg-orange-500 text-white hover:bg-orange-600',
     danger: 'bg-red-500 text-white hover:bg-red-600',
     info: 'bg-gray-300 text-white hover:bg-gray-400',
-    default: 'bg-gray-50 text-gray-700 hover:bg-gray-100 dark:bg-dark-300 dark:text-gray-200',
+    default: 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-300 dark:text-gray-200',
   }
-  return maps[type]
+  return maps[theme]
 })
 </script>
 

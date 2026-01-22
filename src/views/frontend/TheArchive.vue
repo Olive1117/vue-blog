@@ -1,5 +1,5 @@
 <template>
-  <div class="the-archive" p32>
+  <div class="the-archive">
     <h1>归档页</h1>
     <PostList></PostList>
   </div>

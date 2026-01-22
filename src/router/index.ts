@@ -10,7 +10,7 @@ const router = createRouter({
         {
           path: '',
           name: 'home',
-          meta: { title: 'Home' },
+          meta: { title: 'Home', showBanner: true },
           components: {
             default: () => import('@/views/frontend/TheHome.vue'),
             LeftSidebar: () => import('@/views/frontend/TheAside.vue'),
@@ -20,7 +20,10 @@ const router = createRouter({
           path: 'post',
           name: 'archive',
           meta: { title: 'Archive' },
-          component: () => import('@/views/frontend/TheArchive.vue'),
+          components: {
+            default: () => import('@/views/frontend/TheArchive.vue'),
+            LeftSidebar: () => import('@/views/frontend/TheAside.vue'),
+          },
         },
         {
           path: 'post/:id',
@@ -29,18 +32,18 @@ const router = createRouter({
           component: () => import('@/views/frontend/PostDetail.vue'),
           props: true,
         },
-        {
-          path: ':pathMatch(.*)*',
-          name: 'not-found',
-          meta: { title: '404 - 页面未找到' },
-          component: () => import('@/views/frontend/NotFound.vue'),
-        },
       ],
     },
     {
       path: '/admin',
       component: () => import('@/views/AdminLayout.vue'),
       children: [],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      meta: { title: '404 - 页面未找到' },
+      component: () => import('@/views/frontend/NotFound.vue'),
     },
   ],
 })

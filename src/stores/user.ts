@@ -7,7 +7,7 @@ export const useUserStore = defineStore('user', () => {
   const token = ref<string>(localStorage.getItem('token') || '')
   const loading = ref(false)
 
-  const isLoggedIn = computed(() => !!token.value)
+  const isLoggedIn = computed(() => !!token.value && !!userInfo)
 
   async function login(username: string, password: string) {
     loading.value = true
@@ -16,22 +16,27 @@ export const useUserStore = defineStore('user', () => {
       token.value = res.data.data.access_token
       localStorage.setItem('token', token.value)
       await fetchUserInfo()
-      return token.value
+      return true
     } catch (err) {
       console.error(err)
+      return false
     } finally {
       loading.value = false
     }
   }
   function logout() {
     token.value = ''
+    userInfo.value = undefined
     localStorage.removeItem('token')
   }
   async function fetchUserInfo() {
     loading.value = true
     try {
       const res = await userApi.getMe()
-      userInfo.value = res.data.data
+      userInfo.value = {
+        ...res.data.data,
+        birthdate: useDateFormat(res.data.data.birthdate, 'YYYY-MM-DD').value,
+      }
     } catch (err) {
       console.error(err)
     } finally {

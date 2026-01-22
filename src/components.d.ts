@@ -14,6 +14,7 @@ declare module 'vue' {
     BaseAvatar: typeof import('./components/base/BaseAvatar.vue')['default']
     BaseButton: typeof import('./components/base/BaseButton.vue')['default']
     CategoryList: typeof import('./components/common/CategoryList.vue')['default']
+    LoginModal: typeof import('./components/common/LoginModal.vue')['default']
     PostCard: typeof import('./components/common/PostCard.vue')['default']
     PostList: typeof import('./components/layout/PostList.vue')['default']
     ProfileCard: typeof import('./components/common/ProfileCard.vue')['default']

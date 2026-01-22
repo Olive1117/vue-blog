@@ -15,7 +15,9 @@
       <div text-xl mb4>{{ post?.desc }}</div>
       <MdPreview :modelValue="post?.content" theme="light" previewTheme="cyanosis" />
     </div>
-    <div v-else text-8xl wfull hfull flex items-center justify-center>暂无数据</div>
+    <div v-else text-8xl wfull hfull flex items-center justify-center>
+      不对吧，按道理你不应该看见这个
+    </div>
   </div>
 </template>
 
@@ -28,15 +30,24 @@ const postStore = usePostStore()
 const post = computed(() => {
   return postStore.postDetails.get(props.id)
 })
-onMounted(async () => {
-  if (!post.value?.content) {
-    await postStore.refreshPostDetail(props.id)
-  }
+
+// 直接加载避免闪屏
+// onMounted(async () => {
+if (!post.value?.content) {
+  await postStore.fetchPostDetail(props.id).then((p) => {
+    if (p) {
+      postStore.togglePost(p.id)
+    }
+  })
+}
+// })
+onUnmounted(() => {
+  postStore.togglePost(null)
 })
 </script>
 
 <style scoped lang="scss">
 :deep(.md-editor) {
-  @apply border-solid border-slate-500 border-1 bg-none bg-transparent p4 rounded-xl !important;
+  @apply border-solid border-slate-500 border-1 bg-white bg-transparent p4 rounded-xl !important;
 }
 </style>

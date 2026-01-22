@@ -1,18 +1,20 @@
 <template>
-  <BaseButton
-    block
+  <div
     wfull
-    active:scale-none
     my4
-    mx0
-    tag="RouterLink"
-    :to="`/post/${post.short_id}`"
     p4
+    bg-white
+    flex
+    flex-col
+    gap2
+    tag="RouterLink"
+    @click="router.push({ name: 'post', params: { id: post.short_id } })"
+    ref="postCard"
     class="post-card"
   >
-    <div flex items-end gap2>
+    <div flex items-end gap8>
       <h1 text-3xl font-bold font-serif>{{ post.title }}</h1>
-      <div flex flex-col-reverse justify-center text-xs>
+      <div flex flex-col-reverse justify-center text-xs gap1>
         <span inline-flex items-center gap1>
           <div i-tabler-activity></div>
           {{ post.state ? '还活着' : '死了' }}
@@ -34,7 +36,7 @@
       </span>
       <span flex items-center gap1>
         <div i-tabler-category></div>
-        <BaseButton tag="RouterLink" :to="`/tag/${post.category}`" text-size-xs>
+        <BaseButton tag="RouterLink" :to="`/category/${post.category}`" text-size-xs>
           {{ post.category }}
         </BaseButton>
       </span>
@@ -55,13 +57,26 @@
       </span>
     </div>
     <div flex justify-start text-base font-serif>{{ post.desc }}</div>
-  </BaseButton>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { type Post } from '@/api/types/interface'
+import { usePostStore } from '@/stores/post'
 
 const { post } = defineProps<{ post: Post }>()
+const postStore = usePostStore()
+const myHoverableElement = useTemplateRef('postCard')
+const isHovered = useElementHover(myHoverableElement, {
+  delayEnter: 400,
+  delayLeave: 600,
+})
+whenever(isHovered, async () => {
+  if (!postStore.postDetails.get(post.id)) {
+    await postStore.fetchPostDetail(post.id)
+  }
+})
+const router = useRouter()
 </script>
 
 <style scoped lang="scss"></style>

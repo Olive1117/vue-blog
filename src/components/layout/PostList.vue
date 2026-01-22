@@ -1,9 +1,15 @@
 <template>
   <div class="post-list">
-    <BaseButton type="primary" :disabled="postStore.loading" @click="postStore.fetchPosts()">
+    <!-- <BaseButton theme="primary" :disabled="postStore.loading" @click="postStore.refreshPosts()">
       {{ postStore.loading ? '同步中...' : '刷新数据' }}
-    </BaseButton>
-    <PostCard v-for="post in postStore.formattedPosts" :key="post.id" :post="post"></PostCard>
+    </BaseButton> -->
+    <PostCard
+      first:mt0
+      last:mb0
+      v-for="post in postStore.formattedPosts"
+      :key="post.id"
+      :post="post"
+    ></PostCard>
   </div>
 </template>
 
@@ -12,7 +18,7 @@ import { usePostStore } from '@/stores/post'
 const postStore = usePostStore()
 onMounted(() => {
   if (!postStore.total) {
-    postStore.fetchPosts()
+    postStore.refreshPosts()
   }
 })
 </script>

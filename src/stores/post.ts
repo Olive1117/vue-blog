@@ -2,18 +2,19 @@ import { postApi } from '@/api/postApi'
 import type { Post } from '@/api/types/interface'
 
 export const usePostStore = defineStore('post', () => {
+  /**列表 */
   const posts = ref<Post[]>([])
+  /**文章详情缓存 */
   const postDetails = ref(new Map<number | string, Post>())
   const total = ref<number | null>(null)
   const loading = ref(false)
   const currentPostId = ref<string | null>(null)
 
+  /**格式化文章列表排序 */
   const formattedPosts = computed(() => {
-    return posts.value
-      .map((post) => {
-        return postDetails.value.get(post.id) || post
-      })
-      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    return posts.value.sort(
+      (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+    )
   })
 
   const formatPost = (post: Post) => {
@@ -23,7 +24,7 @@ export const usePostStore = defineStore('post', () => {
       updated_at_display: useDateFormat(post.updated_at, 'YYYY-MM-DD').value,
     }
   }
-  async function fetchPosts(params?: { page?: number; size?: number }) {
+  async function refreshPosts(params?: { page?: number; size?: number }) {
     loading.value = true
     try {
       const res = await postApi.getList(params)
@@ -36,14 +37,10 @@ export const usePostStore = defineStore('post', () => {
       loading.value = false
     }
   }
-  function togglePost(id: string) {
-    if (currentPostId.value === id) {
-      currentPostId.value = null
-    } else {
-      currentPostId.value = id
-    }
+  function togglePost(id: string | null) {
+    currentPostId.value = id
   }
-  async function refreshPostDetail(identifier: string): Promise<Post | undefined> {
+  async function fetchPostDetail(identifier: string): Promise<Post | undefined> {
     loading.value = true
     try {
       const res = await postApi.getById(identifier)
@@ -64,8 +61,8 @@ export const usePostStore = defineStore('post', () => {
     total,
     currentPostId,
     formattedPosts,
-    fetchPosts,
+    refreshPosts,
     togglePost,
-    refreshPostDetail,
+    fetchPostDetail,
   }
 })

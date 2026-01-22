@@ -14,11 +14,6 @@ export interface Post {
   updated_at: string
   created_at_display?: string
   updated_at_display?: string
-  // coverImage: string
-  // message: string
-  // recipient: string
-  // location?: string
-  // date: string
 }
 
 /**
