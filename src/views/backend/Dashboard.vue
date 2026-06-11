@@ -1,5 +1,5 @@
 <template>
-  <div class="header">header</div>
+  <div class="dashboard">施工中...</div>
 </template>
 
 <script setup lang="ts"></script>

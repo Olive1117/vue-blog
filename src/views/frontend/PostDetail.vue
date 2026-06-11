@@ -13,6 +13,30 @@
       </div>
       <h1 text-4xl mb2>{{ post?.title }}</h1>
       <div text-xl mb4>{{ post?.desc }}</div>
+      <div flex items-center gap2 mb-4>
+        <p text-xl>分类：</p>
+        <div text-xl bg-white w-20 h10 flex items-center justify-center rounded-lg>
+          {{ post?.category }}
+        </div>
+      </div>
+      <div flex gap2 mb-4>
+        <P text-xl>标签：</P>
+        <div
+          text-xl
+          bg-white
+          w-20
+          h10
+          flex
+          flex-col
+          items-center
+          justify-center
+          rounded-lg
+          v-for="tag in post?.tags"
+          :key="tag"
+        >
+          {{ tag }}
+        </div>
+      </div>
       <MdPreview :modelValue="post?.content" theme="light" previewTheme="cyanosis" />
     </div>
     <div v-else text-8xl wfull hfull flex items-center justify-center>

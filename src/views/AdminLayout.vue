@@ -1,5 +1,5 @@
 <template>
-  <div text-8xl hvh wvw class="admin-layout">
+  <div hvh wvw class="admin-layout">
     <Sidebar />
     <div class="lg:ml-64 min-h-screen flex flex-col">
       <Header @toggle-sidebar="sidebarOpen = true" />

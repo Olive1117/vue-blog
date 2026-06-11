@@ -16,7 +16,7 @@ export const postApi = {
     return request.get<ApiResponse<Post>>(`/articles/${identifier}`)
   },
 
-  /** 创建新明信片 */
+  /** 创建新文章 */
   create(data: Partial<Post>) {
     return request.post<ApiResponse<Post>>('/articles', data)
   },
@@ -27,7 +27,7 @@ export const postApi = {
   },
 
   /** 更新文章 */
-  update(id: number, data: Partial<Post>) {
+  update(id: string, data: Partial<Post>) {
     return request.put<ApiResponse<Post>>(`/articles/${id}`, data)
   },
 }

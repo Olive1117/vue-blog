@@ -60,6 +60,33 @@ export const usePostStore = defineStore('post', () => {
       loading.value = false
     }
   }
+  async function updatePostDetail(id: string, data: Partial<Post>) {
+    try {
+      const res = await postApi.update(id, data)
+      const updatedPost = formatPost(res.data.data)
+      postDetails.value.set(updatedPost.id, updatedPost)
+      postDetails.value.set(updatedPost.short_id, updatedPost)
+      // 同步更新列表中的数据
+      const index = posts.value.findIndex((p) => p.id === id || p.short_id === id)
+      if (index !== -1) {
+        posts.value[index] = updatedPost
+      }
+    } catch (err) {
+      console.error('更新文章失败', err)
+    }
+  }
+  async function createPost(data: Partial<Post>) {
+    try {
+      const res = await postApi.create(data)
+      const newPost = formatPost(res.data.data)
+      posts.value.unshift(newPost)
+      postDetails.value.set(newPost.id, newPost)
+      postDetails.value.set(newPost.short_id, newPost)
+      return newPost
+    } catch (err) {
+      console.error('创建文章失败', err)
+    }
+  }
   return {
     posts,
     postDetails,
@@ -70,7 +97,9 @@ export const usePostStore = defineStore('post', () => {
     totalPages,
     pageSize,
     refreshPosts,
+    createPost,
     togglePost,
     fetchPostDetail,
+    updatePostDetail,
   }
 })
