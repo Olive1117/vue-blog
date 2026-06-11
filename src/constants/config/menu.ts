@@ -1,6 +1,6 @@
 export const NAV_MENU = [
-  { name: '首页', path: '/', icon: 'i-tabler-home' },
-  { name: '文章', path: '/post', icon: 'i-tabler-article' },
+  { name: '主页', path: '/', icon: 'i-tabler-home' },
+  { name: '归档', path: '/post', icon: 'i-tabler-article' },
   { name: '关于', path: '/about', icon: 'i-tabler-user' },
 ]
 export const NAV_MENU_RIGHT = [

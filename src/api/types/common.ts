@@ -8,5 +8,7 @@ export interface ApiResponse<T> {
 /** 分页基础结构 */
 export interface PageResponse<T> {
   list: T[]
+  page: number
+  page_size: number
   total: number
 }

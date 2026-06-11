@@ -4,8 +4,11 @@ import type { Post } from './types/interface'
 
 export const postApi = {
   /** 获取文章列表 */
-  getList(params?: { page?: number; size?: number; keyword?: string }) {
-    return request.get<ApiResponse<PageResponse<Post>>>('/articles', { params })
+
+  getList(params?: Record<string, unknown>) {
+    return request.get<ApiResponse<PageResponse<Post>>>('/articles', {
+      params: { ...params },
+    })
   },
 
   /** 获取单篇文章详情 */
@@ -21,5 +24,10 @@ export const postApi = {
   /** 删除文章 */
   delete(id: number) {
     return request.delete(`/articles/${id}`)
+  },
+
+  /** 更新文章 */
+  update(id: number, data: Partial<Post>) {
+    return request.put<ApiResponse<Post>>(`/articles/${id}`, data)
   },
 }

@@ -1,8 +1,14 @@
 import axios from 'axios'
+import qs from 'qs'
 
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
+  paramsSerializer: {
+    serialize: (params) => {
+      return qs.stringify(params, { arrayFormat: 'repeat', allowDots: true })
+    },
+  },
 })
 
 // 请求拦截器

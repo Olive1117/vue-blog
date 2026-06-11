@@ -9,12 +9,17 @@ export const usePostStore = defineStore('post', () => {
   const total = ref<number | null>(null)
   const loading = ref(false)
   const currentPostId = ref<string | null>(null)
+  const pageSize = ref<number>(0)
 
   /**格式化文章列表排序 */
   const formattedPosts = computed(() => {
     return posts.value.sort(
       (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
     )
+  })
+  const totalPages = computed(() => {
+    if (total.value === null) return 0
+    return Math.ceil(total.value / pageSize.value)
   })
 
   const formatPost = (post: Post) => {
@@ -24,12 +29,13 @@ export const usePostStore = defineStore('post', () => {
       updated_at_display: useDateFormat(post.updated_at, 'YYYY-MM-DD').value,
     }
   }
-  async function refreshPosts(params?: { page?: number; size?: number }) {
+  async function refreshPosts(params?: Record<string, unknown>) {
     loading.value = true
     try {
       const res = await postApi.getList(params)
       posts.value = res.data.data.list.map((p) => formatPost(p))
       total.value = res.data.data.total
+      pageSize.value = res.data.data.page_size
     } catch (err) {
       console.error(err)
       // throw err
@@ -61,6 +67,8 @@ export const usePostStore = defineStore('post', () => {
     total,
     currentPostId,
     formattedPosts,
+    totalPages,
+    pageSize,
     refreshPosts,
     togglePost,
     fetchPostDetail,

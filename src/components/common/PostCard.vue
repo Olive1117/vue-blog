@@ -36,7 +36,7 @@
       </span>
       <span flex items-center gap1>
         <div i-tabler-category></div>
-        <BaseButton tag="RouterLink" :to="`/category/${post.category}`" text-size-xs>
+        <BaseButton tag="RouterLink" @click.stop :to="`/category/${post.category}`" text-size-xs>
           {{ post.category }}
         </BaseButton>
       </span>
@@ -45,6 +45,7 @@
         <div text-size-xs>
           <BaseButton
             tag="RouterLink"
+            @click.stop
             :to="`/tag/${tag}`"
             relative
             class="[&_+_&]:ml2 after:(content-['/'] absolute -right-2 last:content-none text-gray-700)"
