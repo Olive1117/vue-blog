@@ -1,7 +1,7 @@
 <template>
   <div class="default-layout relative">
     <Background class="z-0" />
-    <Navbar class="absolute top-0 left-0 right-0 z-100" />
+    <Navbar class="fixed top-0 left-0 right-0 z-100 transition-all" :class="{'left-[8vw]':isNavbarSmall, 'right-[8vw]':isNavbarSmall}"/>
     <main class="relative z-10 rounded-b-[16rem]">
       <RouterView />
     </main>
@@ -13,8 +13,12 @@
 import Background from '@/components/Background.vue';
 import Footer from '@/components/Footer.vue';
 import Navbar from '@/components/Navbar.vue';
+import { useWindowScroll } from '@vueuse/core';
+import { computed } from 'vue';
 import { RouterView } from 'vue-router';
 
+const {y} = useWindowScroll();
+const isNavbarSmall = computed(() => y.value >= 10)
 </script>
 
 <style scoped>

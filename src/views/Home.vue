@@ -15,7 +15,7 @@
       ></div>
       <!-- 大字介绍 -->
       <div class="absolute left-[10vw] bottom-[10vh] flex flex-col gap-4">
-        <span class="text-4xl">小榄もしあげるよ&nbsp;&nbsp;^⌯𖥦⌯^੭</span>
+        <span class="text-4xl font-black">小榄もしあげるよ&nbsp;&nbsp;^⌯𖥦⌯^੭</span>
         <div class="flex gap-4">
           <span v-for="skill in skill_languages" class="bg-black text-white text-xl rounded-full px-2">
             {{ skill }}
