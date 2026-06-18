@@ -11,10 +11,7 @@ const router = createRouter({
           path: '',
           name: 'home',
           meta: { title: 'Home', showBanner: true },
-          components: {
-            default: () => import('@/views/Home.vue'),
-            LeftSidebar: () => import('@/views/Aside.vue'),
-          },
+          component: () => import('@/views/Home.vue'),
         },
         {
           path: 'post',

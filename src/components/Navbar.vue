@@ -2,7 +2,7 @@
   <header class="nav-bar flex items-center justify-between p-4 whitespace-nowrap">
     <div class="flex items-center">
       <img src="@/assets/小小波奇_透明.png" alt="" class="h-10 w-10" />
-      <span class="ml-2 text-xl font-bold">小榄的博客</span>
+      <span class="ml-2 text-xl font-bold">olive的博客</span>
     </div>
     <nav>
       <ul class="flex items-center justify-center gap-4">
