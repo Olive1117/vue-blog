@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer bg-black text-white p-16 h-128  relative">
+  <footer class="footer bg-black text-white p-16 h-128 relative">
     <div class="z-10 flex items-center h-full relative">
       <div class="flex flex-col justify-between h-full flex-2">
         <div>
@@ -19,6 +19,7 @@
         </div>
       </div>
     </div>
+    <!-- 装饰角 -->
   </footer>
 </template>
 

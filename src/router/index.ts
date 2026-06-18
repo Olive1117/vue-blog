@@ -14,13 +14,10 @@ const router = createRouter({
           component: () => import('@/views/Home.vue'),
         },
         {
-          path: 'post',
+          path: 'archive',
           name: 'archive',
           meta: { title: 'Archive' },
-          components: {
-            default: () => import('@/views/Archive.vue'),
-            LeftSidebar: () => import('@/views/Aside.vue'),
-          },
+          component: () => import('@/views/Archive.vue'),
         },
         {
           path: 'post/:id',
