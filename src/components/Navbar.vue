@@ -4,21 +4,33 @@
       <img src="@/assets/小小波奇_透明.png" alt="头像" class="h-10 w-10" />
       <span class="ml-2 text-xl font-bold">olive的博客</span>
     </div>
-    <nav class="">
+    <nav class="relative" ref="navRef">
+      <div
+        class="absolute bottom-0 top-0 transition-all duration-300 ease-out border rounded-2xl w-10"
+        :style="indicatorStyle"
+      ></div>
       <ul class="flex items-center justify-center gap-4">
         <li class="relative" v-for="navitem in NavLinks" :key="navitem.name">
           <component
             id="dropdown"
-            class="flex items-center border rounded-2xl p-2 gap-2"
+            :ref="(el: unknown) => setItemRef(el, navitem.name)"
+            class="flex items-center p-2 gap-2"
             :is="components(navitem.isFolder, navitem.isUrl)"
             v-bind="linkProps(navitem)"
-            @mouseenter="navitem.isFolder && openDropdown(navitem.name)"
-            @click.stop="navitem.isFolder && toggleDropdown(navitem.name)"
+            @mouseenter="openDropdown(navitem.name)"
+            @click.stop="toggleDropdown(navitem.name)"
           >
-            <DynamicIcon :icon-name="navitem.icon" size="24" color="#333"/>
+            <DynamicIcon :icon-name="navitem.icon" size="24" color="#333" />
             <span>{{ navitem.name }}</span>
             <DynamicIcon v-if="navitem.isUrl" icon-name="ExternalLink" size="16" color="#333" />
-            <DynamicIcon v-if="navitem.isFolder" class="transition-transform" :class="{'rotate-180': navitem.name === activeDropdown}" icon-name="ChevronDown" size="16" color="#333" />
+            <DynamicIcon
+              v-if="navitem.isFolder"
+              class="transition-transform"
+              :class="{ 'rotate-180': navitem.name === activeDropdown }"
+              icon-name="ChevronDown"
+              size="16"
+              color="#333"
+            />
           </component>
           <!-- 下拉菜单 -->
           <ul
@@ -56,18 +68,20 @@
 <script setup lang="ts">
 import { NavLinks, type NavLink } from "@/config/config";
 import DynamicIcon from "@/components/DynamicIcon.vue";
-import { ref } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
 import { vOnClickOutside } from "@vueuse/components";
-import { useDebounceFn } from "@vueuse/core";
+import { useDebounceFn} from "@vueuse/core";
+import { useRoute} from "vue-router";
 
 const components = (isFolder: boolean, isUrl: boolean) => {
   return isFolder ? "button" : isUrl ? "a" : "RouterLink";
 };
 
+// 下拉菜单逻辑
 const activeDropdown = ref<string | null>(null);
 const debouncedCloseDropdown = useDebounceFn(() => {
   activeDropdown.value = null;
-}, 5000);
+}, 3000);
 const toggleDropdown = (name: string) => {
   activeDropdown.value = activeDropdown.value === name ? null : name;
   debouncedCloseDropdown();
@@ -79,6 +93,49 @@ const openDropdown = (name: string) => {
 const linkProps = (navitem: NavLink) => {
   return navitem.isFolder ? {} : navitem.isUrl ? { href: navitem.url, target: "_blank" } : { to: navitem.path };
 };
+
+// 移动提示框逻辑
+const route = useRoute();
+const itemRefs = ref(new Map<string, HTMLElement>());
+const navRef = useTemplateRef('navRef')
+// 获取html元素
+function setItemRef(el: unknown, name: string) {
+  if (el === null) {
+    itemRefs.value.delete(name);
+    return;
+  }
+  const maybeComponent = el as any;
+  const actualEl: unknown = maybeComponent.$el ?? el;
+  if (actualEl instanceof HTMLElement) {
+    itemRefs.value.set(name, actualEl);
+  }
+}
+const currentNav = computed(() => {
+  return NavLinks.find(item => item.path === route.path || item.children?.some(childrenItem => childrenItem.path === route.path))
+})
+const activeItemRect = computed(() => {
+  if (!navRef.value) return null;
+  const targetName = activeDropdown.value ?? currentNav.value?.name;
+  if (!targetName) return null;
+  const el = itemRefs.value.get(targetName)
+  if (!el) return null;
+  const rect = el.getBoundingClientRect()
+  const parentrect = navRef.value.getBoundingClientRect()
+  console.log(activeDropdown.value)
+  return {
+    width: rect.width,
+    left: rect.left - parentrect.left,
+  };
+});
+const indicatorStyle = computed(() => {
+  if (!activeItemRect.value) {
+    return { width: '0px', left: '0px', opacity: '0' };
+  }
+  return {
+    left: activeItemRect.value.left + 'px',
+    width: activeItemRect.value.width + 'px'
+  };
+});
 </script>
 
 <style scoped></style>

@@ -14,18 +14,23 @@ const router = createRouter({
           component: () => import('@/views/Home.vue'),
         },
         {
+          path: 'post/:id',
+          name: 'PostDetail',
+          meta: { title: 'Post' },
+          component: () => import('@/views/PostDetail.vue'),
+          props: true,
+        },
+        {
           path: 'archive',
           name: 'archive',
           meta: { title: 'Archive' },
           component: () => import('@/views/Archive.vue'),
         },
         {
-          path: 'post/:id',
-          name: 'post',
-          meta: { title: 'Post' },
-          component: () => import('@/views/PostDetail.vue'),
-          props: true,
-        },
+          path: 'list',
+          name: 'list',
+          component: () => import('@/views/Archive.vue')
+        }
       ],
     },
     {

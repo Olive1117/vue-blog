@@ -1,5 +1,5 @@
 <template>
-  <div class="archive h-1000">
+  <div class="categories">
     
   </div>
 </template>
