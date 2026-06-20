@@ -121,7 +121,6 @@ const activeItemRect = computed(() => {
   if (!el) return null;
   const rect = el.getBoundingClientRect()
   const parentrect = navRef.value.getBoundingClientRect()
-  console.log(activeDropdown.value)
   return {
     width: rect.width,
     left: rect.left - parentrect.left,

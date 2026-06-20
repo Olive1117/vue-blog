@@ -3,7 +3,7 @@
     <!-- 开屏背景图 -->
     <img class="sticky h-dvh w-full top-0 -z-10 object-cover select-none" src="/IMG_2550.PNG" alt="背景图" />
     <!-- 开屏文字 -->
-    <div class="absolute h-dvh w-full top-0">
+    <div class="absolute h-dvh w-full top-0 whitespace-nowrap bg-linear-to-b from-white to-transparent to-20%">
       <!-- 装饰条 -->
       <div class="absolute top-32 left-8 opacity-50 h-6 w-6 border-l-2 border-t-2 border-olive-700"></div>
       <div class="absolute bottom-16 right-8 opacity-50 h-6 w-6 border-r-2 border-b-2 border-olive-700"></div>
@@ -24,7 +24,7 @@
         <span class="text-8xl font-black text-white mix-blend-difference">OLIVETINT.COM</span>
       </div>
       <!-- 侧边文字 -->
-      <div class="flex items-center gap-4 absolute right-[8vw] top-[24vh] [writing-mode:vertical-rl]">
+      <div class="flex items-center gap-4 absolute right-[8vw] top-[12vh] [writing-mode:vertical-rl]">
         <span class="text-4xl">博客</span>
         <div class="h-[1px] w-[4rem] bg-linear-to-r from-olive-900/0 via-olive-900/50 via-olive-900 via-olive-900/50 to-olive-900/0"></div>
         <span class="uppercase text-sm tracking-[0.25rem]">olive</span>
