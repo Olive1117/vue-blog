@@ -34,6 +34,7 @@ import {
   Message,
   BrandTwitter,
   ChevronDown,
+  Bookmark,
 } from "@vicons/tabler";
 interface IconProps {
   size?: string | number;
@@ -65,6 +66,7 @@ const iconMap: Record<string, Component> = {
   Message,
   BrandTwitter,
   ChevronDown,
+  Bookmark,
 };
 
 const currentIcon = computed(() => iconMap[props.iconName]);

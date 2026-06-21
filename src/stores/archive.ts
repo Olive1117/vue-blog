@@ -5,7 +5,7 @@ import { useDateFormat } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
-const ArchiveAPI = (id?: string) => (id ? "/articles" + "/" + id : "/articles");
+const ArchiveAPI = (id?: string) => (id ? "/articles/"+ id : "/articles");
 
 export interface Archive {
   id: string;
