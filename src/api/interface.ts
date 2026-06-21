@@ -27,10 +27,10 @@ export interface ArticleDTO {
 }
 
 export interface ArticleQuery {
-  title: string;
-  category_name: string;
-  tag_names: string[];
-  state: number;
+  title?: string;
+  category?: string;
+  tags?: string[];
+  state?: number;
 }
 
 export interface CategoryDTO {
@@ -81,4 +81,10 @@ export interface RegisterRequest {
   location: string;
   website: string;
   birthdate: string;
+}
+
+export interface ArticleStatsDTO {
+  total: number;
+  total_by_category: { string: number };
+  total_by_tag: { string: number };
 }

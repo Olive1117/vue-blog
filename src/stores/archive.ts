@@ -1,11 +1,11 @@
 import type { ApiResponse, PageResponse } from "@/api/common";
-import type { ArticleDTO, ArticleQuery } from "@/api/interface";
+import type { ArticleDTO, ArticleQuery, ArticleStatsDTO } from "@/api/interface";
 import { ApiOfetch } from "@/config/ofetch";
 import { useDateFormat } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
-const ArchiveAPI = (id?: string) => (id ? "/articles/"+ id : "/articles");
+const ArchiveAPI = (id?: string) => (id ? "/articles/" + id : "/articles");
 
 export interface Archive {
   id: string;
@@ -33,6 +33,7 @@ export interface Archive {
 export const useArchiveStore = defineStore("archive", () => {
   // State
   const archive = ref<Archive[]>([]);
+  const Stats = ref<ArticleStatsDTO>();
   /**文章详情缓存 */
   const archiveDetails = ref(new Map<number | string, Archive>());
   const countArchive = ref<number>(0);
@@ -90,9 +91,22 @@ export const useArchiveStore = defineStore("archive", () => {
       loading.value = false;
     }
   }
+  const setPageSize = (size: number) => {
+    pageSize.value = size ?? 10;
+  };
+  async function fetchStats() {
+    ApiOfetch<ApiResponse<ArticleStatsDTO>>(ArchiveAPI("stats"))
+      .then((res) => {
+        Stats.value = res.data;
+      })
+      .catch((err) => {
+        console.error("获取文章聚合数据失败", err);
+      });
+  }
 
   return {
     archive,
+    Stats,
     archiveDetails,
     countArchive,
     currentArchiveId,
@@ -102,6 +116,8 @@ export const useArchiveStore = defineStore("archive", () => {
     formattedArchives,
     refreshArchives,
     fetchArchiveDetail,
+    setPageSize,
+    fetchStats,
   };
 });
 
