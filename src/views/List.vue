@@ -36,7 +36,7 @@
       <ul v-show="isTagList" class="flex gap-2 flex-wrap">
         <li
           class="border rounded-lg border-olive-400 font-light text-base py-[0.5] px-2 flex gap-2 text-[#e3769b]"
-          :class="{ 'bg-[#fee8ee]': currentTag[name] }"
+          :class="{ 'bg-[#fee8ee]': currentTag.includes(name) }"
           v-for="(totalPost, name) in archiveStores.Stats?.total_by_tag"
           :key="name"
         >
@@ -77,8 +77,8 @@
       </li>
     </ul>
     <ul class="flex justify-center sticky bottom-8">
-      <li class="" v-for="page, index in generatePageList(currentPage, totalPages)" :key="index">
-        <button class="flex items-center justify-center border h-10 w-10">
+      <li class="" v-for="(page, index) in generatePageList(currentPage, totalPages)" :key="index">
+        <button class="flex items-center justify-center border h-10 w-10" @click="togglePage(page)">
           {{ OmitPage(page) }}
         </button>
       </li>
@@ -91,6 +91,7 @@ import type { ArticleQuery } from "@/api/interface";
 import DynamicIcon from "@/components/DynamicIcon.vue";
 import { useArchiveStore } from "@/stores/archive";
 import { useCategoryTagStore } from "@/stores/categoryTag";
+import { useRouteQuery } from "@vueuse/router";
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
@@ -105,39 +106,40 @@ onMounted(async () => {
 
 // 分类标签列表逻辑
 const cateList = computed(() => ({ 全部: archiveStores.Stats?.total, ...archiveStores.Stats?.total_by_category }));
-const isTagList = ref(false);
-const currentCate = ref<string | null>(null);
+const currentCate = useRouteQuery("category", null, {
+  transform: (v) => (v === null ? null : String(v)), // 保持 null 或字符串
+});
 const toggleCate = (name: string) => {
   currentCate.value = name === "全部" ? null : name;
 };
-const currentTag = ref<Record<string, boolean>>({});
+const currentTag = useRouteQuery<string, string[]>("tags", "", {
+  transform: {
+    get: (v) => (v ? v.split(",") : []),
+    set: (v) => v.join(","),
+  },
+});
 const toggleTag = (name: string) => {
-  currentTag.value = {
-    ...currentTag.value,
-    [name]: !currentTag.value[name],
-  };
+  const set = new Set(currentTag.value);
+  set.has(name) ? set.delete(name) : set.add(name);
+  currentTag.value = Array.from(set);
 };
-const activeTags = computed(() => Object.keys(currentTag.value).filter((k) => currentTag.value[k]));
+const isTagList = ref<boolean>(!!currentTag.value.length);
 
 // 文章列表逻辑
-const page = ref<number>(1);
 const page_size = computed(() => archiveStores.pageSize);
 const postQuery = computed<ArticleQuery>(() => ({
   category: currentCate.value ?? undefined,
-  tags: activeTags.value,
+  tags: currentTag.value,
   state: 1,
 }));
-watch([currentCate, currentTag, page, page_size], () => {
-  archiveStores.refreshArchives(page.value, page_size.value, postQuery.value);
-});
 
 // 文章列表分页查询导航栏
 const JUMP_BACK = -1;
 const JUMP_FORWARD = -2;
 const JUMP_SIZE = 5;
-const currentPage = ref<number>(1);
-const totalPages = computed(() => archiveStores.totalPages);
 const maxVisiblePages = ref<number>(9);
+const currentPage = useRouteQuery("page", 1, { transform: Number });
+const totalPages = computed(() => archiveStores.totalPages);
 const generatePageList = (curPage: number, totPage: number): number[] => {
   const max = maxVisiblePages.value < 3 ? 3 : maxVisiblePages.value;
   if (totPage <= max) {
@@ -173,6 +175,17 @@ const OmitPage = (page: number): string | number => {
   if (page === JUMP_BACK || page === JUMP_FORWARD) return "...";
   return page;
 };
+
+const togglePage = (p: number) => {
+  if (p === JUMP_BACK) currentPage.value -= JUMP_SIZE;
+  if (p === JUMP_FORWARD) currentPage.value += JUMP_SIZE;
+  currentPage.value = p;
+};
+
+// 文章列表响应
+watch([currentCate, currentTag, currentPage, page_size], () => {
+  archiveStores.refreshArchives(currentPage.value, page_size.value, postQuery.value);
+});
 </script>
 
 <style scoped></style>

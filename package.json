@@ -12,6 +12,7 @@
     "@tailwindcss/vite": "^4.3.1",
     "@vueuse/components": "^14.3.0",
     "@vueuse/core": "^14.3.0",
+    "@vueuse/router": "^14.3.0",
     "md-editor-v3": "^6.5.1",
     "ofetch": "^1.5.1",
     "pinia": "^3.0.4",
