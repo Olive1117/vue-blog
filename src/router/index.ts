@@ -29,7 +29,7 @@ const router = createRouter({
         {
           path: 'list',
           name: 'list',
-          component: () => import('@/views/Archive.vue')
+          component: () => import('@/views/List.vue')
         }
       ],
     },

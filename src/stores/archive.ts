@@ -18,8 +18,16 @@ export interface Archive {
   short_id: string;
   created_at: string;
   updated_at: string;
-  created_at_display?: string;
-  updated_at_display?: string;
+  created_at_display?: {
+    year: string;
+    month: string;
+    day: string;
+  };
+  updated_at_display?: {
+    year: string;
+    month: string;
+    day: string;
+  };
 }
 
 export const useArchiveStore = defineStore("archive", () => {
@@ -44,10 +52,12 @@ export const useArchiveStore = defineStore("archive", () => {
 
   // Actions
   const formatArchive = (archive: Archive) => {
+    const [cyear, cmonth, cday] = useDateFormat(archive.created_at, "YYYY-MM-DD").value.split("-");
+    const [uyear, umonth, uday] = useDateFormat(archive.updated_at, "YYYY-MM-DD").value.split("-");
     return {
       ...archive,
-      created_at_display: useDateFormat(archive.created_at, "YYYY-MM-DD").value,
-      updated_at_display: useDateFormat(archive.updated_at, "YYYY-MM-DD").value,
+      created_at_display: { year: cyear, month: cmonth, day: cday },
+      updated_at_display: { year: uyear, month: umonth, day: uday },
     };
   };
   async function refreshArchives(page: number = 1, page_size: number = 10, query?: ArticleQuery) {
