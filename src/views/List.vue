@@ -99,7 +99,7 @@ import { RouterLink } from "vue-router";
 const archiveStores = useArchiveStore();
 const categoryTagStores = useCategoryTagStore();
 onMounted(async () => {
-  await archiveStores.refreshArchives();
+  await archiveStores.refreshArchives(currentPage.value, page_size.value, postQuery.value);
   await categoryTagStores.fetchCategory();
   await categoryTagStores.fetchTag();
 });
@@ -111,6 +111,7 @@ const currentCate = useRouteQuery("category", null, {
 });
 const toggleCate = (name: string) => {
   currentCate.value = name === "全部" ? null : name;
+  currentPage.value = 1
 };
 const currentTag = useRouteQuery<string, string[]>("tags", "", {
   transform: {
@@ -122,6 +123,7 @@ const toggleTag = (name: string) => {
   const set = new Set(currentTag.value);
   set.has(name) ? set.delete(name) : set.add(name);
   currentTag.value = Array.from(set);
+  currentPage.value = 1
 };
 const isTagList = ref<boolean>(!!currentTag.value.length);
 
