@@ -12,7 +12,7 @@
       <p class="text-3xl font-light">最近的文章</p>
     </div>
     <ul class="flex gap-4 flex-wrap">
-      <li class="relative overflow-hidden" v-for="totalPost, name in cateList" :key="name">
+      <li class="relative overflow-hidden" v-for="(totalPost, name) in cateList" :key="name">
         <button
           class="w-full border-b border-olive-700 rounded-xl px-3 py-1 flex items-center gap-1 hover:bg-[#fee8ee]"
           @click="toggleCate(name)"
@@ -76,6 +76,13 @@
         </RouterLink>
       </li>
     </ul>
+    <ul class="flex justify-center sticky bottom-8">
+      <li class="" v-for="page, index in generatePageList(currentPage, totalPages)" :key="index">
+        <button class="flex items-center justify-center border h-10 w-10">
+          {{ OmitPage(page) }}
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -123,6 +130,49 @@ const postQuery = computed<ArticleQuery>(() => ({
 watch([currentCate, currentTag, page, page_size], () => {
   archiveStores.refreshArchives(page.value, page_size.value, postQuery.value);
 });
+
+// 文章列表分页查询导航栏
+const JUMP_BACK = -1;
+const JUMP_FORWARD = -2;
+const JUMP_SIZE = 5;
+const currentPage = ref<number>(1);
+const totalPages = computed(() => archiveStores.totalPages);
+const maxVisiblePages = ref<number>(9);
+const generatePageList = (curPage: number, totPage: number): number[] => {
+  const max = maxVisiblePages.value < 3 ? 3 : maxVisiblePages.value;
+  if (totPage <= max) {
+    return Array.from({ length: totPage }, (_, i) => i + 1);
+  }
+  const result: number[] = [];
+  const half = Math.floor((max - 3) / 2);
+  const left = Math.max(2, curPage - (half - 1));
+  const right = Math.min(totPage - 1, curPage + half - 1);
+
+  result.push(1);
+  if (left > 2) {
+    if (left > 3) result.push(JUMP_BACK);
+    else result.push(2);
+  }
+  if (curPage >= totPage - (half + 1)) {
+    for (let i = totPage - (max - 2) + 1; i <= left - 1; i++) result.push(i);
+  }
+  for (let i = left; i <= right; i++) {
+    result.push(i);
+  }
+  if (curPage <= half + 1) {
+    for (let i = right + 1; i <= max - 2; i++) result.push(i);
+  }
+  if (right < totPage - 1) {
+    if (right < totPage - 2) result.push(JUMP_FORWARD);
+    else result.push(totPage - 1);
+  }
+  result.push(totPage);
+  return result;
+};
+const OmitPage = (page: number): string | number => {
+  if (page === JUMP_BACK || page === JUMP_FORWARD) return "...";
+  return page;
+};
 </script>
 
 <style scoped></style>
