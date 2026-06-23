@@ -15,10 +15,9 @@
 import { useArchiveStore } from '@/stores/archive';
 import { MdEditor, MdPreview, MdCatalog } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { onMounted, ref} from 'vue';
 const text = ref('Hello Editor!');
 const id = 'preview-only';
-const mdRef = useTemplateRef("md")
 const scrollElement = document.documentElement;
 
 

@@ -83,16 +83,16 @@ onMounted(async () => {
   if (archiveStores.allArchives.length === 0) await archiveStores.fetchAllArchives();
 });
 
-const countYear = computed(() => {
-  return archiveStores.allArchives.reduce(
-    (acc, item) => {
-      const year = item.created_at_display?.year || "unknown";
-      acc[year] = (acc[year] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-});
+// const countYear = computed(() => {
+//   return archiveStores.allArchives.reduce(
+//     (acc, item) => {
+//       const year = item.created_at_display?.year || "unknown";
+//       acc[year] = (acc[year] || 0) + 1;
+//       return acc;
+//     },
+//     {} as Record<string, number>,
+//   );
+// });
 const countMonth = computed(() => {
   return archiveStores.allArchives.reduce(
     (acc, item) => {

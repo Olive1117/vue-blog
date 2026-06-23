@@ -41,7 +41,7 @@
         <li
           class="border rounded-lg border-olive-400 font-light text-base py-[0.5] px-2 flex gap-2 text-[#e3769b]"
           :class="{ 'bg-[#fee8ee]': currentTag.includes(name) }"
-          v-for="(totalPost, name) in archiveStores.Stats?.total_by_tag"
+          v-for="name in Object.keys(archiveStores.Stats?.total_by_tag || [])"
           :key="name"
         >
           <button class="" @click="toggleTag(name)">
@@ -103,14 +103,14 @@
               <!-- <div class="flex h-full">收藏</div> -->
             </div>
           </div>
+          <span class="absolute right-0 bottom-4 text-xs text-[#e3769b] whitespace-nowrap">开始阅读 -></span>
         </RouterLink>
-        <span class="absolute right-0 bottom-4 text-xs text-[#e3769b] whitespace-nowrap">开始阅读 -></span>
       </li>
     </ul>
     <!-- 分页查询 -->
     <ul class="flex justify-center gap-4 sticky bottom-8 text-xl">
       <li class="" v-for="(page, index) in generatePageList(currentPage, totalPages)" :key="index">
-        <button class="flex items-center justify-center border-b h-10 w-10" @click="togglePage(page)">
+        <button class="flex items-center justify-center border-b-3 h-10 w-10" @click="togglePage(page)">
           {{ OmitPage(page) }}
         </button>
       </li>
@@ -122,14 +122,14 @@
 import type { ArticleQuery } from "@/api/interface";
 import DynamicIcon from "@/components/DynamicIcon.vue";
 import { useArchiveStore } from "@/stores/archive";
-import { useCategoryTagStore } from "@/stores/categoryTag";
+// import { useCategoryTagStore } from "@/stores/categoryTag";
 import { useRouteQuery } from "@vueuse/router";
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
 // 数据加载
 const archiveStores = useArchiveStore();
-const categoryTagStores = useCategoryTagStore();
+// const categoryTagStores = useCategoryTagStore();
 
 // 分类标签列表逻辑
 const cateList = computed(() => ({ 全部: archiveStores.Stats?.total, ...archiveStores.Stats?.total_by_category }));

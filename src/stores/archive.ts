@@ -164,22 +164,22 @@ export const useArchiveStore = defineStore("archive", () => {
 });
 
 // Archive → ArticleDTO
-function toArticleDTO(archive: Archive): ArticleDTO {
-  return {
-    id: archive.id,
-    title: archive.title,
-    desc: archive.desc,
-    content: archive.content,
-    state: archive.state,
-    created_at: archive.created_at,
-    updated_at: archive.updated_at,
-    short_id: archive.short_id,
-    category: archive.category,
-    tags: archive.tags,
-    word_count: archive.word_count,
-    image_count: archive.image_count,
-  };
-}
+// function toArticleDTO(archive: Archive): ArticleDTO {
+//   return {
+//     id: archive.id,
+//     title: archive.title,
+//     desc: archive.desc,
+//     content: archive.content,
+//     state: archive.state,
+//     created_at: archive.created_at,
+//     updated_at: archive.updated_at,
+//     short_id: archive.short_id,
+//     category: archive.category,
+//     tags: archive.tags,
+//     word_count: archive.word_count,
+//     image_count: archive.image_count,
+//   };
+// }
 
 // ArticleDTO → Archive
 function toArchive(dto: ArticleDTO): Archive {

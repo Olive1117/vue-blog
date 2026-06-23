@@ -2,8 +2,7 @@ import type { ApiResponse, PageResponse } from "@/api/common";
 import type { CategoryDTO, TagDTO } from "@/api/interface";
 import { ApiOfetch } from "@/config/ofetch";
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { useArchiveStore, type Archive } from "./archive";
+import { ref} from "vue";
 
 const CategoryAPI = (id?: string) => (id ? "/categories/" + id : "/categories");
 const TagsAPI = (id?: string) => (id ? "/tags/" + id : "/tags");
