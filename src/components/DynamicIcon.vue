@@ -39,6 +39,7 @@ import {
   ListSearch,
   Package,
   Archive,
+  Pencil,
 } from "@vicons/tabler";
 interface IconProps {
   size?: string | number;
@@ -75,6 +76,7 @@ const iconMap: Record<string, Component> = {
   ListSearch,
   Package,
   Archive,
+  Pencil,
 };
 
 const currentIcon = computed(() => iconMap[props.iconName]);

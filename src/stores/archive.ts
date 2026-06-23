@@ -35,12 +35,12 @@ export interface Archive {
 export const useArchiveStore = defineStore("archive", () => {
   // State
   const archives = ref<Archive[]>([]);
-  const Stats = ref<ArticleStatsDTO>();
-  /**文章详情缓存 */
+  const allArchives = ref<Archive[]>([]);
   const archiveDetails = ref(new Map<number | string, Archive>());
+  const Stats = ref<ArticleStatsDTO>();
   const countArchive = ref<number>(0);
   const currentArchiveId = ref<string | null>(null);
-  const pageSize = ref<number>(0);
+  const pageSize = ref<number>(10);
   const loading = ref(false);
 
   // Getters
@@ -50,35 +50,35 @@ export const useArchiveStore = defineStore("archive", () => {
   });
   /**格式化文章列表排序 */
   const archivesByUpdateTime = computed(() => {
-    return archives.value.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+    return [...archives.value].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
   });
   const archivesByCreateTime = computed(() => {
-    return archives.value.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return [...archives.value].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   });
   const groupedArchives = computed(() => {
-  const result: Record<string, Record<string, Record<string, Archive[]>>> = {};
+    const result: Record<string, Record<string, Record<string, Archive[]>>> = {};
 
-  archives.value.forEach((archive) => {
-    const display = archive.created_at_display;
-    if (!display) return;
-    const { year, month, day } = display;
+    allArchives.value.forEach((archive) => {
+      const display = archive.created_at_display;
+      if (!display) return;
+      const { year, month, day } = display;
 
-    // 初始化层级
-    if (!result[year]) {
-      result[year] = {};
-    }
-    if (!result[year][month]) {
-      result[year][month] = {};
-    }
-    if (!result[year][month][day]) {
-      result[year][month][day] = [];
-    }
+      // 初始化层级
+      if (!result[year]) {
+        result[year] = {};
+      }
+      if (!result[year][month]) {
+        result[year][month] = {};
+      }
+      if (!result[year][month][day]) {
+        result[year][month][day] = [];
+      }
 
-    result[year][month][day].push(archive);
+      result[year][month][day].push(archive);
+    });
+
+    return result;
   });
-
-  return result;
-});
 
   // Actions
   const formatArchive = (archive: Archive) => {
@@ -132,11 +132,21 @@ export const useArchiveStore = defineStore("archive", () => {
         console.error("获取文章聚合数据失败", err);
       });
   }
+  async function fetchAllArchives() {
+    loading.value = true;
+    ApiOfetch<ApiResponse<PageResponse<ArticleDTO>>>(ArchiveAPI(), { query: { page: 1, page_size: 9999 } }).then(
+      (res) => {
+        allArchives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
+      }
+    ).catch((err)=>{console.error(err)});
+    loading.value = false
+  }
 
   return {
     archives,
-    Stats,
+    allArchives,
     archiveDetails,
+    Stats,
     countArchive,
     currentArchiveId,
     pageSize,
@@ -149,6 +159,7 @@ export const useArchiveStore = defineStore("archive", () => {
     fetchArchiveDetail,
     setPageSize,
     fetchStats,
+    fetchAllArchives
   };
 });
 

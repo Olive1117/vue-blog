@@ -16,19 +16,12 @@
 import Background from "@/components/Background.vue";
 import Footer from "@/components/Footer.vue";
 import Navbar from "@/components/Navbar.vue";
-import { useArchiveStore } from "@/stores/archive";
 import { useWindowScroll } from "@vueuse/core";
-import { computed, onMounted} from "vue";
+import { computed} from "vue";
 import { RouterView } from "vue-router";
 
 const { y } = useWindowScroll();
 const isNavbarSmall = computed(() => y.value >= 10);
-const archive = useArchiveStore()
-onMounted(async()=>{
-  await archive.refreshArchives()
-  await archive.fetchArchiveDetail("OB5o22CBgfLBq")
-  await archive.fetchStats()
-})
 </script>
 
 <style scoped></style>

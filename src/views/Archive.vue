@@ -1,5 +1,13 @@
 <template>
-  <div class="archive px-[10vw] py-32 flex flex-col gap-4 h-1000 tabular-nums">
+  <div class="archive px-[10vw] py-32 flex flex-col gap-4 tabular-nums">
+    <!-- 大标题 -->
+    <div class="flex flex-col gap-2 mb-8">
+      <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">article&nbsp;index</p>
+      <p class="text-6xl font-light">
+        归档
+        <span class="text-base tracking-[0.1rem]">收好那些散落的碎片，还有漫长岁月里不该被遗忘的名字。</span>
+      </p>
+    </div>
     <section v-for="(groupedMonth, year) in archiveStores.groupedArchives" :key="year">
       <div class="flex justify-between">
         <h2
@@ -16,9 +24,9 @@
       </div>
       <section class="relative group" v-for="(groupedDay, month) in groupedMonth" :key="month">
         <h3
-          class="text-5xl opacity-0 group-has-hover:opacity-50 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent"
+          class="text-5xl opacity-0 group-has-hover:opacity-40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent"
         >
-          {{ Number(month) }}月
+          {{ Number(month) }}月·{{ countMonth[month] }}篇
         </h3>
         <ul>
           <li v-for="post in getMonthArchives(groupedDay)" :key="post.id">
@@ -55,13 +63,13 @@
         </ul>
       </section>
     </section>
-    <p>到底有什么好的归档样式啊......</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import DynamicIcon from "@/components/DynamicIcon.vue";
 import { useArchiveStore, type Archive } from "@/stores/archive";
+import { computed, onMounted } from "vue";
 
 const archiveStores = useArchiveStore();
 const getMonthArchives = (days: Record<string, Archive[]>) => {
@@ -71,6 +79,30 @@ const getMonthArchives = (days: Record<string, Archive[]>) => {
   }
   return archives;
 };
+onMounted(async () => {
+  if (archiveStores.allArchives.length === 0) await archiveStores.fetchAllArchives();
+});
+
+const countYear = computed(() => {
+  return archiveStores.allArchives.reduce(
+    (acc, item) => {
+      const year = item.created_at_display?.year || "unknown";
+      acc[year] = (acc[year] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+});
+const countMonth = computed(() => {
+  return archiveStores.allArchives.reduce(
+    (acc, item) => {
+      const month = item.created_at_display?.month || "unknown";
+      acc[month] = (acc[month] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+});
 </script>
 
 <style scoped></style>
