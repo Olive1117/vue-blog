@@ -1,6 +1,9 @@
 <template>
-  <div class="background absolute top-0 left-0 w-full h-full">
-    <div class="w-full h-full bg"></div>
+  <div class="background ">
+      <div class="absolute inset-0 mask-[url('@/assets/i-like-food.svg')] bg-[#e3769b]/10 z-1"></div>
+      <div class="absolute inset-0 bg-white z-0"></div>
+    <!-- <div class="w-full h-full bg"></div> -->
+    <!-- <img class="w-full h-full stroke-current text-[#e3769b]]" src="@/assets/i-like-food.svg" alt="背景"> -->
   </div>
 </template>
 

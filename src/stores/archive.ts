@@ -18,6 +18,8 @@ export interface Archive {
   short_id: string;
   created_at: string;
   updated_at: string;
+  word_count: number;
+  image_count: number;
   created_at_display?: {
     year: string;
     month: string;
@@ -32,7 +34,7 @@ export interface Archive {
 
 export const useArchiveStore = defineStore("archive", () => {
   // State
-  const archive = ref<Archive[]>([]);
+  const archives = ref<Archive[]>([]);
   const Stats = ref<ArticleStatsDTO>();
   /**文章详情缓存 */
   const archiveDetails = ref(new Map<number | string, Archive>());
@@ -47,9 +49,36 @@ export const useArchiveStore = defineStore("archive", () => {
     return Math.ceil(countArchive.value / pageSize.value);
   });
   /**格式化文章列表排序 */
-  const formattedArchives = computed(() => {
-    return archive.value.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+  const archivesByUpdateTime = computed(() => {
+    return archives.value.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
   });
+  const archivesByCreateTime = computed(() => {
+    return archives.value.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  });
+  const groupedArchives = computed(() => {
+  const result: Record<string, Record<string, Record<string, Archive[]>>> = {};
+
+  archives.value.forEach((archive) => {
+    const display = archive.created_at_display;
+    if (!display) return;
+    const { year, month, day } = display;
+
+    // 初始化层级
+    if (!result[year]) {
+      result[year] = {};
+    }
+    if (!result[year][month]) {
+      result[year][month] = {};
+    }
+    if (!result[year][month][day]) {
+      result[year][month][day] = [];
+    }
+
+    result[year][month][day].push(archive);
+  });
+
+  return result;
+});
 
   // Actions
   const formatArchive = (archive: Archive) => {
@@ -67,7 +96,7 @@ export const useArchiveStore = defineStore("archive", () => {
       const res = await ApiOfetch<ApiResponse<PageResponse<ArticleDTO>>>(ArchiveAPI(), {
         query: { ...query, page: page, page_size: page_size },
       });
-      archive.value = res.data.list.map((p) => formatArchive(toArchive(p)));
+      archives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
       countArchive.value = res.data.total;
       pageSize.value = res.data.page_size;
     } catch (err) {
@@ -105,7 +134,7 @@ export const useArchiveStore = defineStore("archive", () => {
   }
 
   return {
-    archive,
+    archives,
     Stats,
     archiveDetails,
     countArchive,
@@ -113,7 +142,9 @@ export const useArchiveStore = defineStore("archive", () => {
     pageSize,
     loading,
     totalPages,
-    formattedArchives,
+    archivesByUpdateTime,
+    archivesByCreateTime,
+    groupedArchives,
     refreshArchives,
     fetchArchiveDetail,
     setPageSize,
@@ -134,6 +165,8 @@ function toArticleDTO(archive: Archive): ArticleDTO {
     short_id: archive.short_id,
     category: archive.category,
     tags: archive.tags,
+    word_count: archive.word_count,
+    image_count: archive.image_count,
   };
 }
 
@@ -148,6 +181,8 @@ function toArchive(dto: ArticleDTO): Archive {
     category: dto.category,
     tags: dto.tags,
     short_id: dto.short_id,
+    word_count: dto.word_count,
+    image_count: dto.image_count,
     created_at: dto.created_at,
     updated_at: dto.updated_at,
   };

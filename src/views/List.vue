@@ -1,5 +1,6 @@
 <template>
-  <div class="list m-32 flex flex-col gap-4">
+  <div class="list px-[10vw] py-32 flex flex-col gap-4">
+    <!-- 大标题 -->
     <div class="flex flex-col gap-2 mb-8">
       <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">article&nbsp;index</p>
       <p class="text-6xl font-light">
@@ -7,10 +8,12 @@
         <span class="text-base tracking-[0.1rem]">写下游戏里的余韵，还有普通日子里值得记住的小事。</span>
       </p>
     </div>
+    <!-- 副标题 -->
     <div class="flex flex-col gap-2">
       <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">latest&nbsp;posts</p>
       <p class="text-3xl font-light">最近的文章</p>
     </div>
+    <!-- 分类栏 -->
     <ul class="flex gap-4 flex-wrap">
       <li class="relative overflow-hidden" v-for="(totalPost, name) in cateList" :key="name">
         <button
@@ -31,8 +34,9 @@
         </button>
       </li>
     </ul>
+    <!-- 标签栏 -->
     <div class="flex flex-col gap-2 items-start">
-      <button @click="isTagList = !isTagList" class="tracking-[0.15rem] text-sm p-2">+ 按标签浏览</button>
+      <button @click="onTagList()" class="tracking-[0.15rem] text-sm p-2">+ 按标签浏览</button>
       <ul v-show="isTagList" class="flex gap-2 flex-wrap">
         <li
           class="border rounded-lg border-olive-400 font-light text-base py-[0.5] px-2 flex gap-2 text-[#e3769b]"
@@ -46,10 +50,11 @@
         </li>
       </ul>
     </div>
+    <!-- 文章列表栏 -->
     <ul class="flex flex-col tracking-[0.15rem]">
       <li
-        class="border-t-1 border-olive-400/70 last:border-b"
-        v-for="archives in archiveStores.formattedArchives"
+        class="relative border-t-1 border-olive-400/70 last:border-b"
+        v-for="archives in archiveStores.archivesByUpdateTime"
         :key="archives.id"
       >
         <RouterLink class="h-full w-full" :to="'/post/' + archives.short_id">
@@ -66,16 +71,30 @@
             </div>
             <div class="flex justify-between items-end w-full">
               <div class="flex flex-col items-start gap-1">
-                <div class="text-xs">总字数</div>
+                <p class="text-xs flex gap-2 whitespace-nowrap flex-wrap">
+                  <span class="flex items-center">
+                    <DynamicIcon class="text-base" icon-name="Books" color="#e3769b"/>
+                    <span class="px-2" @click.prevent.stop="toggleCate(archives.category)">{{ archives.category }}</span>
+                  </span>
+                  <span class="flex items-center">
+                    <DynamicIcon class="text-base" icon-name="ListSearch" color="#e3769b"/>
+                    <span class="px-2">总字数&nbsp;{{ archives.word_count }}</span>
+                  </span>
+                </p>
+                <p class="text-xs flex items-center whitespace-nowrap flex-wrap">
+                  <DynamicIcon class="text-base" icon-name="Tag" color="#e3769b"/>
+                  <span @click.prevent.stop="toggleTag(tag)" class="border-r border-olive-600 last:border-none px-2" v-for="tag in archives.tags">{{ tag }}</span>
+                </p>
                 <p class="text-2xl font-medium">{{ archives.title }}</p>
                 <p class="text-sm font-light">{{ archives.desc }}</p>
               </div>
-              <span class="text-xs text-[#e3769b]">开始阅读 -></span>
+              <span class="absolute right-0 bottom-4 text-xs text-[#e3769b] whitespace-nowrap">开始阅读 -></span>
             </div>
           </div>
         </RouterLink>
       </li>
     </ul>
+    <!-- 分页查询 -->
     <ul class="flex justify-center sticky bottom-8">
       <li class="" v-for="(page, index) in generatePageList(currentPage, totalPages)" :key="index">
         <button class="flex items-center justify-center border h-10 w-10" @click="togglePage(page)">
@@ -123,9 +142,14 @@ const toggleTag = (name: string) => {
   const set = new Set(currentTag.value);
   set.has(name) ? set.delete(name) : set.add(name);
   currentTag.value = Array.from(set);
+  if (!!set.size) isTagList.value = true
   currentPage.value = 1
 };
 const isTagList = ref<boolean>(!!currentTag.value.length);
+const onTagList = () => {
+  if (isTagList) currentTag.value = []
+  isTagList.value = !isTagList.value
+}
 
 // 文章列表逻辑
 const page_size = computed(() => archiveStores.pageSize);

@@ -20,6 +20,8 @@ export interface ArticleDTO {
   created_at: string;
   updated_at: string;
   short_id: string;
+  word_count: number;
+  image_count: number;
 
   category: string;
 

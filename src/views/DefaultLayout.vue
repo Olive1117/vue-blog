@@ -1,14 +1,14 @@
 <template>
   <div class="default-layout relative">
-    <Background class="" />
+    <Background class="absolute inset-0 z-0 top-0" />
     <Navbar
       class="fixed top-0 left-0 right-0 z-100 transition-all"
       :class="{ 'left-[8vw]': isNavbarSmall, 'right-[8vw]': isNavbarSmall }"
     />
-    <main class="relative z-0 rounded-b-[16rem]">
+    <main class="relative z-10 rounded-b-[16rem]">
       <RouterView />
     </main>
-    <Footer class="relative z-10" />
+    <Footer class="relative z-11" />
   </div>
 </template>
 
