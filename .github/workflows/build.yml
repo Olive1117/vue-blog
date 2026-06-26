@@ -10,19 +10,13 @@ on:
       - main
       - ci
   workflow_dispatch:
-    inputs:
-      environment:
-        description: '部署环境'
-        required: true
-        default: 'staging'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 检出分支
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: 安装pnpm
         uses: pnpm/action-setup@v4
