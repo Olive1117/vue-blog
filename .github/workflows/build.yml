@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - test/ci
+      - ci
   pull_request:
     branches:
       - main
-      - test/ci
+      - ci
   workflow_dispatch:
     inputs:
       environment:
@@ -42,6 +42,6 @@ jobs:
       - name: 打包上传
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: olive-blog-vue-v1
           path: ./dist
           retention-days: 1
