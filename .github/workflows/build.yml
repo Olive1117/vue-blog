@@ -46,6 +46,18 @@ jobs:
       name: production
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
+      - name: Debug Info
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Runner OS: $RUNNER_OS"
+          echo "Ref: $GITHUB_REF"
+          echo "Actor: $GITHUB_ACTOR"
+          
+          # 打印 secrets 的长度（不会暴露内容，但可验证是否设置）
+          echo "SSH_KEY length: ${#SSH_PRIVATE_KEY}"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: 下载构建产物
         uses: actions/download-artifact@v4
         with:
