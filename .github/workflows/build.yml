@@ -39,3 +39,35 @@ jobs:
           name: olive-blog-vue-v1
           path: ./dist
           retention-days: 1
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: olive-blog-vue-v1
+          path: ./dist
+
+      - name: 通过 SSH 复制文件
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: "dist/*"
+          target: "/opt/docker/nginx/www/blog-v1"
+          strip_components: 1
+          rm: true
+      
+      - name: 重启nginx
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.key }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker exec nginx nginx -s reload
