@@ -2,7 +2,7 @@ name: Deploy to NackNerd
 
 on:
   workflow_run:
-    workflow: [Build]
+    workflows: [Build]
     types:
       - completed
     branches:
