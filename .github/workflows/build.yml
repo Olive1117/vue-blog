@@ -57,7 +57,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "dist/*"
           target: "/opt/docker/nginx/www/blog-v1"
           strip_components: 1
@@ -68,6 +68,6 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker exec nginx nginx -s reload
