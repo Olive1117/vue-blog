@@ -1,7 +1,7 @@
 <template>
   <div class="list px-[10vw] py-32 flex flex-col gap-4">
     <!-- 大标题 -->
-    <div class="flex flex-col gap-2 mb-8">
+    <div class="flex flex-col gap-2 pb-8">
       <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">post&nbsp;index</p>
       <p class="text-6xl font-light">
         文章
@@ -9,10 +9,10 @@
       </p>
     </div>
     <!-- 副标题 -->
-    <div class="flex flex-col gap-2">
+    <!-- <div class="flex flex-col gap-2">
       <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">latest&nbsp;posts</p>
       <p class="text-3xl font-light">最近的文章</p>
-    </div>
+    </div> -->
     <!-- 分类栏 -->
     <ul class="flex gap-4 flex-wrap">
       <li class="relative overflow-hidden" v-for="(totalPost, name) in cateList" :key="name">

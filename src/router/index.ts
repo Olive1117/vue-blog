@@ -34,7 +34,7 @@ const router = createRouter({
         {
           path: "category",
           name: "category",
-          component: () => import("@/components/UnderConstruction.vue"),
+          component: () => import("@/views/Categories.vue"),
         },
         {
           path: "diary",

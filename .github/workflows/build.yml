@@ -4,25 +4,19 @@ on:
   push:
     branches:
       - main
-      - test/ci
+      - ci
   pull_request:
     branches:
       - main
-      - test/ci
+      - ci
   workflow_dispatch:
-    inputs:
-      environment:
-        description: '部署环境'
-        required: true
-        default: 'staging'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 检出分支
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: 安装pnpm
         uses: pnpm/action-setup@v4
@@ -42,6 +36,38 @@ jobs:
       - name: 打包上传
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: olive-blog-vue-v1
           path: ./dist
           retention-days: 1
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+    # if: github.ref_name == 'main' && github.event_name == 'push'
+    steps:
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: olive-blog-vue-v1
+          path: ./dist
+
+      - name: 通过 SSH 复制文件
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/*"
+          target: "/opt/docker/nginx/www/blog-v1"
+          strip_components: 1
+          rm: true
+      
+      - name: 重启nginx
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker exec nginx nginx -s reload
