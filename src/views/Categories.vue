@@ -41,8 +41,13 @@
 
 <script setup lang="ts">
 import { useArchiveStore } from "@/stores/archive";
+import { onMounted } from "vue";
 
 const archiveStores = useArchiveStore();
+
+onMounted(async()=>{
+  await archiveStores.fetchStats();
+})
 </script>
 
 <style scoped></style>
