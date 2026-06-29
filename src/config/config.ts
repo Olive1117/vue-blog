@@ -13,6 +13,7 @@ export const NavLinks: NavLink[] = [
     { name: '文章列表', icon: 'List', path: '/list', isFolder: false, isUrl: false },
     { name: '归档', icon: 'Archive', path: '/archive', isFolder: false, isUrl: false },
     { name: '分类', icon: 'Folders', path: '/category', isFolder: false, isUrl: false },
+    { name: '新建文章', icon: 'FilePlus', path: '/write', isFolder: false, isUrl: false },
   ] },
   { name: '我的', icon: 'User', isFolder: true, isUrl: false, children: [
     { name: '日记', icon: 'Notebook', path: '/diary', isFolder: false, isUrl: false },

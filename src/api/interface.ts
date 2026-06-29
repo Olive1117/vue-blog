@@ -11,7 +11,7 @@ export interface AuthResponse {
   token_type: string;
 }
 
-export interface ArticleDTO {
+export interface ArticleVO {
   id: string;
   title: string;
   desc: string;
@@ -22,6 +22,7 @@ export interface ArticleDTO {
   short_id: string;
   word_count: number;
   image_count: number;
+  slug: string;
 
   category: string;
 
