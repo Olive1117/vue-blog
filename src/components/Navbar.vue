@@ -5,51 +5,32 @@
       <span class="ml-2 text-xl font-bold">olive的博客</span>
     </div>
     <nav class="relative" ref="navRef">
-      <div
-        class="absolute bottom-0 top-0 transition-all duration-300 ease-out border rounded-2xl w-10"
-        :style="indicatorStyle"
-      ></div>
+      <div class="absolute bottom-0 top-0 transition-all duration-300 ease-out border rounded-2xl w-10"
+        :style="indicatorStyle"></div>
       <ul class="flex items-center justify-center gap-4">
         <li class="relative" v-for="navitem in NavLinks" :key="navitem.name">
-          <component
-            id="dropdown"
-            :ref="(el: unknown) => setItemRef(el, navitem.name)"
-            class="flex items-center p-2 gap-2"
-            :is="components(navitem.isFolder, navitem.isUrl)"
-            v-bind="linkProps(navitem)"
-            @mouseenter="openDropdown(navitem.name)"
-            @click.stop="toggleDropdown(navitem.name)"
-          >
+          <component id="dropdown" :ref="(el: unknown) => setItemRef(el, navitem.name)"
+            class="flex items-center p-2 gap-2" :is="components(navitem.isFolder, navitem.isUrl)"
+            v-bind="linkProps(navitem)" @mouseenter="openDropdown(navitem.name)"
+            @click.stop="toggleDropdown(navitem.name)">
             <DynamicIcon :icon-name="navitem.icon" size="24" color="#333" />
             <span>{{ navitem.name }}</span>
             <DynamicIcon v-if="navitem.isUrl" icon-name="ExternalLink" size="16" color="#333" />
-            <DynamicIcon
-              v-if="navitem.isFolder"
-              class="transition-transform"
-              :class="{ 'rotate-180': navitem.name === activeDropdown }"
-              icon-name="ChevronDown"
-              size="16"
-              color="#333"
-            />
+            <DynamicIcon v-if="navitem.isFolder" class="transition-transform"
+              :class="{ 'rotate-180': navitem.name === activeDropdown }" icon-name="ChevronDown" size="16"
+              color="#333" />
           </component>
           <!-- 下拉菜单 -->
-          <ul
-            v-on-click-outside="[
-              () => {
-                activeDropdown = null;
-              },
-              { ignore: ['#dropdown'] },
-            ]"
-            v-if="navitem.isFolder"
-            v-show="activeDropdown === navitem.name"
-            class="absolute left-0 top-full mt-2 p-2 bg-white/85 shadow-lg rounded-2xl"
-          >
+          <ul v-on-click-outside="[
+            () => {
+              activeDropdown = null;
+            },
+            { ignore: ['#dropdown'] },
+          ]" v-if="navitem.isFolder" v-show="activeDropdown === navitem.name"
+            class="absolute left-0 top-full mt-2 p-2 bg-white/85 shadow-lg rounded-2xl">
             <li v-for="child in navitem.children" :key="child.name">
-              <component
-                class="flex items-center p-2 border-transparent border rounded rounded-2xl hover:border-black"
-                :is="components(child.isFolder, child.isUrl)"
-                v-bind="linkProps(child)"
-              >
+              <component class="flex items-center p-2 border-transparent border rounded rounded-2xl hover:border-black"
+                :is="components(child.isFolder, child.isUrl)" v-bind="linkProps(child)">
                 <DynamicIcon :icon-name="child.icon" size="24" color="#333" class="mr-2" />
                 <span>{{ child.name }}</span>
                 <DynamicIcon class="ml-2" v-if="child.isUrl" icon-name="ExternalLink" size="16" color="#333" />
@@ -59,9 +40,15 @@
         </li>
       </ul>
     </nav>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 relative">
       <DynamicIcon icon-name="Search" size="24" color="#333" />
-      <DynamicIcon icon-name="EditCircle" size="24" color="#333" />
+      <DynamicIcon id="loginIcon" icon-name="EditCircle" size="24" color="#333" @click="toggleLoginModel()" />
+      <form v-show="activeLogin" v-on-click-outside="[() => toggleLoginModel(false),{ignore: ['#loginIcon']}]" class="flex flex-col absolute top-full right-0 p-2 bg-white/85 shadow-lg rounded-2xl gap-2"
+        @submit.prevent="handleSubmit">
+        <input v-model="login.username" type="text" name="" id="" placeholder="用户名">
+        <input v-model="login.password" type="password" name="" id="" placeholder="密码">
+        <button type="submit">登录</button>
+      </form>
     </div>
   </header>
 </template>
@@ -71,8 +58,9 @@ import { NavLinks, type NavLink } from "@/config/config";
 import DynamicIcon from "@/components/DynamicIcon.vue";
 import { computed, ref, useTemplateRef } from "vue";
 import { vOnClickOutside } from "@vueuse/components";
-import { useDebounceFn} from "@vueuse/core";
-import { useRoute} from "vue-router";
+import { useDebounceFn } from "@vueuse/core";
+import { useRoute } from "vue-router";
+import { useUserStore } from "@/stores/user";
 
 const components = (isFolder: boolean, isUrl: boolean) => {
   return isFolder ? "button" : isUrl ? "a" : "RouterLink";
@@ -136,6 +124,21 @@ const indicatorStyle = computed(() => {
     width: activeItemRect.value.width + 'px'
   };
 });
+
+// 登录逻辑
+const userStores = useUserStore();
+const activeLogin = ref<boolean>();
+const toggleLoginModel = (bool?:boolean) => {
+  activeLogin.value = bool ?? !activeLogin.value
+}
+const login = ref<{ username: string, password: string }>({
+  username: '',
+  password: '',
+})
+const handleSubmit = () => {
+  userStores.fetchLogin(login.value)
+  activeLogin.value = false
+}
 </script>
 
 <style scoped></style>

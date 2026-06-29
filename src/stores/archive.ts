@@ -149,11 +149,6 @@ export const useArchiveStore = defineStore("archive", () => {
     ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(id), {
       body: data,
       method: "PUT",
-      headers: {
-        Authorization:
-          "Bearer " +
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzgyNzE4NDAxLCJpYXQiOjE3ODI3MDc2MDF9.8B3wKdVPb1n5LL6FqgizTPndGOEES80U8LFA9CFOaxU",
-      },
     })
       .then((res) => {
         const updatedArchive = formatArchive(toArchive(res.data));
@@ -177,11 +172,6 @@ export const useArchiveStore = defineStore("archive", () => {
     ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(), {
       body: data,
       method: "POST",
-      headers: {
-        Authorization:
-          "Bearer " +
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzgyNzI5NTAyLCJpYXQiOjE3ODI3MTg3MDJ9.Ymuzbi9xMdOUEAknNYUIc-dM9XH8b65w5ducDW2Dg0U",
-      },
     })
       .then((res) => {
         const createArchive = formatArchive(toArchive(res.data));
