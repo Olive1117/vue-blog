@@ -180,7 +180,7 @@ export const useArchiveStore = defineStore("archive", () => {
       headers: {
         Authorization:
           "Bearer " +
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzgyNzE4NDAxLCJpYXQiOjE3ODI3MDc2MDF9.8B3wKdVPb1n5LL6FqgizTPndGOEES80U8LFA9CFOaxU",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzgyNzI5NTAyLCJpYXQiOjE3ODI3MTg3MDJ9.Ymuzbi9xMdOUEAknNYUIc-dM9XH8b65w5ducDW2Dg0U",
       },
     })
       .then((res) => {

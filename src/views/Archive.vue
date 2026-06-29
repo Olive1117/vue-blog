@@ -80,7 +80,7 @@ const getMonthArchives = (days: Record<string, Archive[]>) => {
   return archives;
 };
 onMounted(async () => {
-  if (archiveStores.allArchives.length === 0) await archiveStores.fetchAllArchives();
+  await archiveStores.fetchAllArchives();
 });
 
 // const countYear = computed(() => {

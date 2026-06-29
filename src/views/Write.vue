@@ -24,7 +24,7 @@
               <option v-if="newCategory" :value="newCategory">{{ newCategory }}</option>
             </select>
             <input class="border rounded-xl p-1" v-show="isNewCate" v-model="newCategory" type="text" placeholder="输入分类"
-              @keyup.enter="toggleNewCate(false)" />
+              @keyup.enter="toggleNewCate(false), editingPost.category = newCategory" />
             <button class="flex items-center text-xl p-1" @click="toggleNewCate()">
               <DynamicIcon iconName="NewSection"></DynamicIcon>
             </button>
