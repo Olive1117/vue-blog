@@ -135,12 +135,43 @@ export const useArchiveStore = defineStore("archive", () => {
   }
   async function fetchAllArchives() {
     loading.value = true;
-    ApiOfetch<ApiResponse<PageResponse<ArticleDTO>>>(ArchiveAPI(), { query: { page: 1, page_size: 9999 } }).then(
-      (res) => {
+    ApiOfetch<ApiResponse<PageResponse<ArticleDTO>>>(ArchiveAPI(), { query: { page: 1, page_size: 9999 } })
+      .then((res) => {
         allArchives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
-      }
-    ).catch((err)=>{console.error(err)});
-    loading.value = false
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    loading.value = false;
+  }
+  async function updatePostDetail(id: string, data: Partial<ArticleDTO>) {
+    loading.value = true;
+    console.log("打印请求嗯", data)
+    ApiOfetch<ApiResponse<ArticleDTO>>(ArchiveAPI(id), {
+      body: data,
+      method: "PUT",
+      headers: {
+        Authorization:
+          "Bearer " +
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzgyNzE4NDAxLCJpYXQiOjE3ODI3MDc2MDF9.8B3wKdVPb1n5LL6FqgizTPndGOEES80U8LFA9CFOaxU",
+      },
+    })
+      .then((res) => {
+        const updatedArchive = formatArchive(toArchive(res.data));
+        archiveDetails.value.set(updatedArchive.id, updatedArchive);
+        archiveDetails.value.set(updatedArchive.short_id, updatedArchive);
+        const allIndex = allArchives.value.findIndex((a) => a.id === id);
+        if (allIndex !== -1) {
+          allArchives.value[allIndex] = updatedArchive;
+          return updatedArchive;
+        }
+      })
+      .catch((err) => {
+        console.error("更新文章失败", err);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
   }
 
   return {
@@ -160,7 +191,8 @@ export const useArchiveStore = defineStore("archive", () => {
     fetchArchiveDetail,
     setPageSize,
     fetchStats,
-    fetchAllArchives
+    fetchAllArchives,
+    updatePostDetail,
   };
 });
 
