@@ -27,6 +27,14 @@ const router = createRouter({
           component: () => import("@/views/Archive.vue"),
         },
         {
+          path: "write",
+          name: "write",
+          children: [
+            { path: "", name: "new", component: () => import("@/views/Write.vue") },
+            { path: ":id", name: "edit", component: () => import("@/views/Write.vue"), props: true },
+          ],
+        },
+        {
           path: "list",
           name: "list",
           component: () => import("@/views/List.vue"),

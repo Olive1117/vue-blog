@@ -59,8 +59,9 @@
         </li>
       </ul>
     </nav>
-    <div class="flex items-center">
-      <DynamicIcon icon-name="Search" size="24" color="#333" class="mr-4" />
+    <div class="flex items-center gap-4">
+      <DynamicIcon icon-name="Search" size="24" color="#333" />
+      <DynamicIcon icon-name="EditCircle" size="24" color="#333" />
     </div>
   </header>
 </template>

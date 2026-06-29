@@ -16,6 +16,7 @@ export interface Archive {
   category: string;
   tags: string[];
   short_id: string;
+  slug: string;
   created_at: string;
   updated_at: string;
   word_count: number;
@@ -192,6 +193,7 @@ function toArchive(dto: ArticleDTO): Archive {
     category: dto.category,
     tags: dto.tags,
     short_id: dto.short_id,
+    slug: dto.slug,
     word_count: dto.word_count,
     image_count: dto.image_count,
     created_at: dto.created_at,

@@ -40,6 +40,7 @@ import {
   Package,
   Archive,
   Pencil,
+  EditCircle,
 } from "@vicons/tabler";
 interface IconProps {
   size?: string | number;
@@ -77,6 +78,7 @@ const iconMap: Record<string, Component> = {
   Package,
   Archive,
   Pencil,
+  EditCircle,
 };
 
 const currentIcon = computed(() => iconMap[props.iconName]);

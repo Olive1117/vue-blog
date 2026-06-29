@@ -22,6 +22,7 @@ export interface ArticleDTO {
   short_id: string;
   word_count: number;
   image_count: number;
+  slug: string;
 
   category: string;
 
