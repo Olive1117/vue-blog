@@ -42,7 +42,7 @@
             ]"
             v-if="navitem.isFolder"
             v-show="activeDropdown === navitem.name"
-            class="absolute left-0 top-full mt-2 p-2 bg-white/70 shadow-lg rounded-2xl"
+            class="absolute left-0 top-full mt-2 p-2 bg-white/85 shadow-lg rounded-2xl"
           >
             <li v-for="child in navitem.children" :key="child.name">
               <component

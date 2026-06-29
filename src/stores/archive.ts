@@ -1,5 +1,5 @@
 import type { ApiResponse, PageResponse } from "@/api/common";
-import type { ArticleDTO, ArticleQuery, ArticleStatsDTO } from "@/api/interface";
+import type { ArticleVO, ArticleQuery, ArticleStatsDTO } from "@/api/interface";
 import { ApiOfetch } from "@/config/ofetch";
 import { useDateFormat } from "@vueuse/core";
 import { defineStore } from "pinia";
@@ -94,7 +94,7 @@ export const useArchiveStore = defineStore("archive", () => {
   async function refreshArchives(page: number = 1, page_size: number = 10, query?: ArticleQuery) {
     loading.value = true;
     try {
-      const res = await ApiOfetch<ApiResponse<PageResponse<ArticleDTO>>>(ArchiveAPI(), {
+      const res = await ApiOfetch<ApiResponse<PageResponse<ArticleVO>>>(ArchiveAPI(), {
         query: { ...query, page: page, page_size: page_size },
       });
       archives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
@@ -110,7 +110,7 @@ export const useArchiveStore = defineStore("archive", () => {
   async function fetchArchiveDetail(identifier: string): Promise<Archive | undefined> {
     loading.value = true;
     try {
-      const res = await ApiOfetch<ApiResponse<ArticleDTO>>(ArchiveAPI(identifier));
+      const res = await ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(identifier));
       const fullPost = formatArchive(toArchive(res.data));
       archiveDetails.value.set(fullPost.id, fullPost);
       archiveDetails.value.set(fullPost.short_id, fullPost);
@@ -135,7 +135,7 @@ export const useArchiveStore = defineStore("archive", () => {
   }
   async function fetchAllArchives() {
     loading.value = true;
-    ApiOfetch<ApiResponse<PageResponse<ArticleDTO>>>(ArchiveAPI(), { query: { page: 1, page_size: 9999 } })
+    ApiOfetch<ApiResponse<PageResponse<ArticleVO>>>(ArchiveAPI(), { query: { page: 1, page_size: 9999 } })
       .then((res) => {
         allArchives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
       })
@@ -144,10 +144,9 @@ export const useArchiveStore = defineStore("archive", () => {
       });
     loading.value = false;
   }
-  async function updatePostDetail(id: string, data: Partial<ArticleDTO>) {
+  async function updatePostDetail(id: string, data: Partial<ArticleVO>) {
     loading.value = true;
-    console.log("打印请求嗯", data)
-    ApiOfetch<ApiResponse<ArticleDTO>>(ArchiveAPI(id), {
+    ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(id), {
       body: data,
       method: "PUT",
       headers: {
@@ -173,7 +172,30 @@ export const useArchiveStore = defineStore("archive", () => {
         loading.value = false;
       });
   }
-
+  async function createPostDetail(data: Partial<ArticleVO>) {
+    loading.value = true;
+    ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(), {
+      body: data,
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzgyNzE4NDAxLCJpYXQiOjE3ODI3MDc2MDF9.8B3wKdVPb1n5LL6FqgizTPndGOEES80U8LFA9CFOaxU",
+      },
+    })
+      .then((res) => {
+        const createArchive = formatArchive(toArchive(res.data));
+        archiveDetails.value.set(createArchive.id, createArchive);
+        archiveDetails.value.set(createArchive.short_id, createArchive);
+        allArchives.value.push(createArchive);
+      })
+      .catch((err) => {
+        console.error("创建文章失败", err);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  }
   return {
     archives,
     allArchives,
@@ -193,6 +215,7 @@ export const useArchiveStore = defineStore("archive", () => {
     fetchStats,
     fetchAllArchives,
     updatePostDetail,
+    createPostDetail,
   };
 });
 
@@ -214,21 +237,21 @@ export const useArchiveStore = defineStore("archive", () => {
 //   };
 // }
 
-// ArticleDTO → Archive
-function toArchive(dto: ArticleDTO): Archive {
+// ArticleVO → Archive
+function toArchive(VO: ArticleVO): Archive {
   return {
-    id: dto.id,
-    title: dto.title,
-    desc: dto.desc,
-    content: dto.content,
-    state: dto.state,
-    category: dto.category,
-    tags: dto.tags,
-    short_id: dto.short_id,
-    slug: dto.slug,
-    word_count: dto.word_count,
-    image_count: dto.image_count,
-    created_at: dto.created_at,
-    updated_at: dto.updated_at,
+    id: VO.id,
+    title: VO.title,
+    desc: VO.desc,
+    content: VO.content,
+    state: VO.state,
+    category: VO.category,
+    tags: VO.tags,
+    short_id: VO.short_id,
+    slug: VO.slug,
+    word_count: VO.word_count,
+    image_count: VO.image_count,
+    created_at: VO.created_at,
+    updated_at: VO.updated_at,
   };
 }

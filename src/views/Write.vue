@@ -1,14 +1,14 @@
 <template>
-  <div class="write px-[10vw] py-16 flex justify-between gap-4">
-
-    <div class="flex flex-col gap-4 flex-4 min-w-0 p-4 border rounded-xl">
+  <div class="write px-[10vw] py-20 flex justify-between gap-4">
+    <div class="flex flex-col gap-4 flex-4 min-w-0 p-4 border rounded-xl bg-white shadow-xl">
       <div class="flex gap-4">
         <input class="flex-3 border rounded-xl p-4 min-w-0" v-model="editingPost.title" placeholder="标题"></input>
         <input class="flex-1 border rounded-xl p-4 min-w-0" v-model="editingPost.slug" placeholder="slug(xx-xx)"></input>
       </div>
       <MdEditor ref="editorRef" v-model="editingPost.content" previewTheme="github" />
     </div>
-    <div class="border rounded-xl flex-1 p-4 flex flex-col justify-between">
+
+    <div class="border rounded-xl flex-1 p-4 flex flex-col justify-between bg-white shadow-xl">
       <div class="flex flex-col gap-4">
         <div>
           <p>简介</p>
@@ -46,16 +46,16 @@
       </div>
       <div class="flex justify-center">
         <button v-if="isEdit" @click="archiveStores.updatePostDetail(editingPost.id, editingPost)">保存文章</button>
-        <button v-if="!isEdit">新建文章</button>
+        <button v-if="!isEdit" @click="archiveStores.createPostDetail(editingPost)">新建文章</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ArticleDTO } from '@/api/interface';
+import type { ArticleVO } from '@/api/interface';
 import { useArchiveStore } from '@/stores/archive';
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import { MdEditor, type ExposeParam } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import { useLayoutStore } from '@/stores/layout';
@@ -63,8 +63,8 @@ import DynamicIcon from '@/components/DynamicIcon.vue';
 import { useCategoryTagStore } from '@/stores/categoryTag';
 
 
-const props = defineProps<{ id: string }>()
-const editingPost = ref<ArticleDTO>({
+const props = defineProps<{ id?: string }>()
+const defaultPost = {
   id: "0",
   title: '',
   desc: '',
@@ -78,7 +78,8 @@ const editingPost = ref<ArticleDTO>({
   slug: '',
   category: '',
   tags: []
-})
+}
+const editingPost = ref<ArticleVO>(defaultPost)
 const layoutStores = useLayoutStore();
 const archiveStores = useArchiveStore();
 const categoryTagStores = useCategoryTagStore();
@@ -106,11 +107,24 @@ onMounted(() => {
   categoryTagStores.fetchCategory()
   editorRef.value?.on('pageFullscreen', layoutStores.toggleImmersive)
   editorRef.value?.on('fullscreen', layoutStores.toggleImmersive)
-  if (isEdit) { archiveStores.fetchArchiveDetail(props.id).then((res) => { if (res) editingPost.value = res }) }
+  if (isEdit && props.id) { archiveStores.fetchArchiveDetail(props.id).then((res) => { if (res) editingPost.value = res }) }
 })
 onUnmounted(() => {
   layoutStores.exitImmersive()
 })
+
+watch(() => props.id, () => {
+  initPage()
+}, { immediate: true })
+function initPage() {
+  if (props.id) {
+    // 编辑模式：加载文章数据
+    archiveStores.fetchArchiveDetail(props.id).then((res) => { if (res) editingPost.value = res })
+  } else {
+    // 新建模式：重置表单
+    editingPost.value = defaultPost
+  }
+}
 </script>
 
 <style scoped></style>
