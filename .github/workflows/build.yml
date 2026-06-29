@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: production
-    # if: github.ref_name == 'main' && github.event_name == 'push'
+    if: github.ref_name == 'main' && github.event_name == 'push'
     steps:
       - name: 下载构建产物
         uses: actions/download-artifact@v4
