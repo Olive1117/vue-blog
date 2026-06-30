@@ -28,7 +28,7 @@
               </select>
               <input class="border rounded-xl p-1" v-show="isNewCate" v-model="newCategory" type="text"
                 placeholder="输入分类" @keydown.enter.prevent="toggleNewCate(false), editingPost.category = newCategory" />
-              <button class="flex items-center text-xl p-1" @click="toggleNewCate()">
+              <button class="flex items-center text-xl p-1" @click.prevent="toggleNewCate()">
                 <DynamicIcon iconName="NewSection"></DynamicIcon>
               </button>
             </div>
@@ -91,6 +91,7 @@ const editorRef = useTemplateRef<ExposeParam>('editorRef');
 const handleSubmit = () => {
   if (isEdit.value) {
     archiveStores.updatePostDetail(editingPost.value.id, editingPost.value)
+    archiveStores.fetchArchiveDetail(editingPost.value.id)
     router.push({name: 'PostDetail', params:{id:editingPost.value.short_id}})
   } else {
     archiveStores.createPostDetail(editingPost.value)

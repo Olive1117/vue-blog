@@ -1,5 +1,6 @@
 <template>
   <div class="post-detail flex flex-col px-[10vw] py-32 flex flex-col gap-4">
+    <RouterLink :to="{name:'list'}" class="flex items-center gap-1 p-2"><DynamicIcon icon-name="ArrowLeft"/>回到列表</RouterLink>
     <div class="flex justify-between items-end">
       <div class="flex flex-col gap-4">
         <h1 class="text-4xl font-bold">{{ detail?.title }}</h1>
@@ -25,7 +26,7 @@
         </div>
       </div>
       <div v-if="detail">
-        <button @click="router.push({name:'edit',params:{id:detail.short_id}})" class="flex items-center gap-1 p-2"><DynamicIcon icon-name="Pencil"/>编辑文章</button>
+        <RouterLink :to="{name:'edit',params:{id:detail.short_id}}" class="flex items-center gap-1 p-2"><DynamicIcon icon-name="Pencil"/>编辑文章</RouterLink>
       </div>
     </div>
     <div id="mdd" class="mddd flex border-t p-4 bg-white" ref="md">
@@ -42,15 +43,20 @@ import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { onMounted, ref } from "vue";
 import DynamicIcon from "@/components/DynamicIcon.vue";
-import { useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 const text = ref("加载中");
 const id = "preview-only";
 const detail = ref<Archive>();
-const router = useRouter();
 const props = defineProps<{ id: string }>();
 
 const archiveStores = useArchiveStore();
 onMounted(async () => {
+  const cached = archiveStores.archiveDetails.get(props.id);
+  if (cached) {
+    detail.value = cached;
+    text.value = detail.value.content;
+    return;
+  }
   await archiveStores.fetchArchiveDetail(props.id).then((res) => {
     if (res) {
       detail.value = res;
