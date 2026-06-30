@@ -64,8 +64,9 @@ import 'md-editor-v3/lib/style.css';
 import { useLayoutStore } from '@/stores/layout';
 import DynamicIcon from '@/components/DynamicIcon.vue';
 import { useCategoryTagStore } from '@/stores/categoryTag';
+import { useRouter } from 'vue-router';
 
-
+const router = useRouter();
 const props = defineProps<{ id?: string }>()
 const defaultPost = (): ArticleVO => ({
   id: "0",
@@ -90,8 +91,10 @@ const editorRef = useTemplateRef<ExposeParam>('editorRef');
 const handleSubmit = () => {
   if (isEdit.value) {
     archiveStores.updatePostDetail(editingPost.value.id, editingPost.value)
+    router.push({name: 'PostDetail', params:{id:editingPost.value.short_id}})
   } else {
     archiveStores.createPostDetail(editingPost.value)
+    router.push({name:'list'})
   }
 }
 

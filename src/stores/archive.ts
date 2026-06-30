@@ -186,6 +186,16 @@ export const useArchiveStore = defineStore("archive", () => {
         loading.value = false;
       });
   }
+  async function deletedPost(id: string) {
+    loading.value = true;
+    ApiOfetch<ApiResponse<[]>>(ArchiveAPI(id), { query: { id }, method: "DELETE" }).then((res) => {
+      allArchives.value = allArchives.value.filter((a) => a.id !== id);
+      archiveDetails.value.delete(id);
+      const byShortId = [...archiveDetails.value.entries()].find(([, v]) => v.id === id);
+      if (byShortId) archiveDetails.value.delete(byShortId[0]);
+    }).catch((err)=>{console.error("删除文章失败", err);
+    }).finally(()=>{loading.value = false});
+  }
   return {
     archives,
     allArchives,
@@ -206,6 +216,7 @@ export const useArchiveStore = defineStore("archive", () => {
     fetchAllArchives,
     updatePostDetail,
     createPostDetail,
+    deletedPost,
   };
 });
 

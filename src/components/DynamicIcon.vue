@@ -45,6 +45,10 @@ import {
   Hash,
   FilePlus,
   Trash,
+  SquareX,
+  Square,
+  X,
+  TrashX,
 } from "@vicons/tabler";
 interface IconProps {
   size?: string | number;
@@ -87,6 +91,10 @@ const iconMap: Record<string, Component> = {
   Hash,
   FilePlus,
   Trash,
+  SquareX,
+  Square,
+  X,
+  TrashX,
 };
 
 const currentIcon = computed(() => iconMap[props.iconName]);

@@ -11,9 +11,16 @@
           </p>
         </div>
       </div>
-      <button class="flex items-center gap-1 p-2">
-        <DynamicIcon icon-name="Trash" />批量删除
-      </button>
+      <div class="flex">
+        <button v-if="isDelete" class="flex items-center gap-1 p-2" @click="confirmBatchDelete()">
+          <DynamicIcon icon-name="TrashX" />
+          <span>删除</span>
+          <span>{{ pendingDeleteIds.size }}</span>
+        </button>
+        <button class="flex items-center gap-1 p-2" :class="{ 'bg-red-500': isDelete }" @click="toggleDelete()">
+          <DynamicIcon :icon-name="isDelete ? 'X' : 'Trash'" />{{ isDelete ? "取消" : "批量删除" }}
+        </button>
+      </div>
     </div>
     <section v-for="(groupedMonth, year) in archiveStores.groupedArchives" :key="year">
       <div class="flex justify-between">
@@ -38,35 +45,45 @@
         </h3>
         <ul class="">
           <li v-for="post in getMonthArchives(groupedDay)" :key="post.id">
-            <RouterLink :to="'/post/' + post.short_id">
-              <p class="flex gap-4 p-2 whitespace-nowrap">
-                <!-- 时间 -->
-                <span class="text-xl"> {{ post.created_at_display?.month }}.{{ post.created_at_display?.day }} </span>
-                <span class="flex flex-1 justify-between gap-4">
-                  <!-- 分类 -->
-                  <span class="flex items-center text-[#e3769b]">
-                    <DynamicIcon icon-name="Books" class="text-xl stroke-current" />
-                    <span class="px-2 text-lg">
-                      {{ post.category }}
+            <component :is="isDelete ? 'div' : 'RouterLink'" :to="isDelete ? undefined : '/post/' + post.short_id"
+              @click="isDelete ? toggleDeleteSelection(post.id) : undefined">
+              <div class="flex items-center">
+                <DynamicIcon v-if="!pendingDeleteIds.has(post.id)" icon-name="Square"></DynamicIcon>
+                <DynamicIcon v-else icon-name="SquareX"></DynamicIcon>
+                <div class="flex-1 relative flex items-center">
+                  <div v-if="pendingDeleteIds.has(post.id)" class="absolute left-0 right-0 bg-black h-1"></div>
+                  <p class="flex items-center gap-4 p-2 whitespace-nowrap w-full">
+                    <!-- 时间 -->
+                    <span class="text-xl"> {{ post.created_at_display?.month }}.{{ post.created_at_display?.day }}
                     </span>
-                  </span>
-                  <!-- 标题标签 -->
-                  <span class="flex flex-4 justify-between">
-                    <!-- 标题 -->
-                    <span class="text-2xl">
-                      {{ post.title }}
+                    <span class="flex flex-1 justify-between gap-4">
+                      <!-- 分类 -->
+                      <span class="flex items-center text-[#e3769b]">
+                        <DynamicIcon icon-name="Books" class="text-xl stroke-current" />
+                        <span class="px-2 text-lg">
+                          {{ post.category }}
+                        </span>
+                      </span>
+                      <!-- 标题标签 -->
+                      <span class="flex flex-4 justify-between">
+                        <!-- 标题 -->
+                        <span class="text-2xl">
+                          {{ post.title }}
+                        </span>
+                        <!-- 标签 -->
+                        <span class="flex items-center">
+                          <DynamicIcon icon-name="Tag" color="#e3769b" class="text-xl" />
+                          <span class="flex items-center px-2 text-base" v-for="(tag, index) in post.tags"
+                            :key="index">{{
+                              tag
+                            }}</span>
+                        </span>
+                      </span>
                     </span>
-                    <!-- 标签 -->
-                    <span class="flex items-center">
-                      <DynamicIcon icon-name="Tag" color="#e3769b" class="text-xl" />
-                      <span class="flex items-center px-2 text-base" v-for="(tag, index) in post.tags" :key="index">{{
-                        tag
-                      }}</span>
-                    </span>
-                  </span>
-                </span>
-              </p>
-            </RouterLink>
+                  </p>
+                </div>
+              </div>
+            </component>
           </li>
         </ul>
       </section>
@@ -77,7 +94,7 @@
 <script setup lang="ts">
 import DynamicIcon from "@/components/DynamicIcon.vue";
 import { useArchiveStore, type Archive } from "@/stores/archive";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const archiveStores = useArchiveStore();
 const getMonthArchives = (days: Record<string, Archive[]>) => {
@@ -111,6 +128,37 @@ const countMonth = computed(() => {
     {} as Record<string, number>,
   );
 });
+
+const isDelete = ref<boolean>(false)
+const toggleDelete = (bool?: boolean) => {
+  isDelete.value = bool ?? !isDelete.value
+  if (!isDelete.value) { pendingDeleteIds.value.clear() }
+}
+const pendingDeleteIds = ref<Set<string>>(new Set)
+const toggleDeleteSelection = (id: string) => {
+  if (pendingDeleteIds.value.has(id)) {
+    pendingDeleteIds.value.delete(id)
+  } else {
+    pendingDeleteIds.value.add(id)
+  }
+  console.log(pendingDeleteIds.value);
+
+}
+const confirmBatchDelete = async () => {
+  if (pendingDeleteIds.value.size === 0) return
+  const ids = Array.from(pendingDeleteIds.value)
+  const results = await Promise.allSettled(
+    ids.map(id => archiveStores.deletedPost(id))
+  )
+  const failed = results
+    .map((r, i) => ({ ...r, id: ids[i] }))
+    .filter(r => r.status === 'rejected')
+  if (failed.length > 0) {
+    console.error('部分删除失败:', failed)
+  }
+  await archiveStores.fetchAllArchives()
+  pendingDeleteIds.value.clear()
+}
 </script>
 
 <style scoped></style>
