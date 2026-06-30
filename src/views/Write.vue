@@ -28,7 +28,7 @@
               </select>
               <input class="border rounded-xl p-1" v-show="isNewCate" v-model="newCategory" type="text"
                 placeholder="输入分类" @keydown.enter.prevent="toggleNewCate(false), editingPost.category = newCategory" />
-              <button class="flex items-center text-xl p-1" @click="toggleNewCate()">
+              <button class="flex items-center text-xl p-1" @click.prevent="toggleNewCate()">
                 <DynamicIcon iconName="NewSection"></DynamicIcon>
               </button>
             </div>
@@ -64,8 +64,9 @@ import 'md-editor-v3/lib/style.css';
 import { useLayoutStore } from '@/stores/layout';
 import DynamicIcon from '@/components/DynamicIcon.vue';
 import { useCategoryTagStore } from '@/stores/categoryTag';
+import { useRouter } from 'vue-router';
 
-
+const router = useRouter();
 const props = defineProps<{ id?: string }>()
 const defaultPost = (): ArticleVO => ({
   id: "0",
@@ -90,8 +91,11 @@ const editorRef = useTemplateRef<ExposeParam>('editorRef');
 const handleSubmit = () => {
   if (isEdit.value) {
     archiveStores.updatePostDetail(editingPost.value.id, editingPost.value)
+    archiveStores.fetchArchiveDetail(editingPost.value.id)
+    router.push({name: 'PostDetail', params:{id:editingPost.value.short_id}})
   } else {
     archiveStores.createPostDetail(editingPost.value)
+    router.push({name:'list'})
   }
 }
 
