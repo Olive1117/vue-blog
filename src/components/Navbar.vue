@@ -43,7 +43,8 @@
     <div class="flex items-center gap-4 relative">
       <DynamicIcon icon-name="Search" size="24" color="#333" />
       <DynamicIcon id="loginIcon" icon-name="EditCircle" size="24" color="#333" @click="toggleLoginModel()" />
-      <form v-show="activeLogin" v-on-click-outside="[() => toggleLoginModel(false),{ignore: ['#loginIcon']}]" class="flex flex-col absolute top-full right-0 p-2 bg-white/85 shadow-lg rounded-2xl gap-2"
+      <form v-show="activeLogin" v-on-click-outside="[() => toggleLoginModel(false), { ignore: ['#loginIcon'] }]"
+        class="flex flex-col absolute top-full right-0 p-4 bg-white/85 shadow-lg rounded-2xl gap-2"
         @submit.prevent="handleSubmit">
         <input v-model="login.username" type="text" name="" id="" placeholder="用户名">
         <input v-model="login.password" type="password" name="" id="" placeholder="密码">
@@ -128,7 +129,7 @@ const indicatorStyle = computed(() => {
 // 登录逻辑
 const userStores = useUserStore();
 const activeLogin = ref<boolean>();
-const toggleLoginModel = (bool?:boolean) => {
+const toggleLoginModel = (bool?: boolean) => {
   activeLogin.value = bool ?? !activeLogin.value
 }
 const login = ref<{ username: string, password: string }>({

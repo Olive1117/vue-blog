@@ -1,34 +1,42 @@
 <template>
   <div class="archive px-[10vw] py-32 flex flex-col gap-4 tabular-nums">
-    <!-- 大标题 -->
-    <div class="flex flex-col gap-2 mb-8">
-      <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">article&nbsp;index</p>
-      <p class="text-6xl font-light">
-        归档
-        <span class="text-base tracking-[0.1rem]">收好那些散落的碎片，还有漫长岁月里不该被遗忘的名字。</span>
-      </p>
+    <div class="flex justify-between items-end">
+      <div>
+        <!-- 大标题 -->
+        <div class="flex flex-col gap-2 mb-8">
+          <p class="uppercase text-xs tracking-[0.25rem] text-[#e3769b]">article&nbsp;index</p>
+          <p class="text-6xl font-light">
+            归档
+            <span class="text-base tracking-[0.1rem]">收好那些散落的碎片，还有漫长岁月里不该被遗忘的名字。</span>
+          </p>
+        </div>
+      </div>
+      <button class="flex items-center gap-1 p-2">
+        <DynamicIcon icon-name="Trash" />批量删除
+      </button>
     </div>
     <section v-for="(groupedMonth, year) in archiveStores.groupedArchives" :key="year">
       <div class="flex justify-between">
         <h2
-          class="flex text-7xl font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent mask-b-from-0% mb-[-1.5rem]"
-        >
+          class="flex items-start gap-4 text-7xl font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent mask-b-from-0% mb-[-1.5rem]">
           {{ year }}
+          <span class="text-5xl flex text-center">
+            {{ countYear[year] }}
+            <span class="text-4xl">篇</span>
+          </span>
         </h2>
         <h2
-          class="flex items-start gap-2 text-7xl font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent mask-b-from-0% mb-[-1.5rem]"
-        >
+          class="flex items-start gap-2 text-7xl font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent mask-b-from-0% mb-[-1.5rem]">
           {{ Number(year) - 2007 }}
           <span class="text-5xl"> 岁 </span>
         </h2>
       </div>
       <section class="relative group" v-for="(groupedDay, month) in groupedMonth" :key="month">
         <h3
-          class="text-5xl opacity-0 group-has-hover:opacity-40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent"
-        >
+          class="-z-1 pointer-events-none text-5xl opacity-0 group-has-hover:opacity-40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent">
           {{ Number(month) }}月·{{ countMonth[month] }}篇
         </h3>
-        <ul>
+        <ul class="">
           <li v-for="post in getMonthArchives(groupedDay)" :key="post.id">
             <RouterLink :to="'/post/' + post.short_id">
               <p class="flex gap-4 p-2 whitespace-nowrap">
@@ -83,16 +91,16 @@ onMounted(async () => {
   await archiveStores.fetchAllArchives();
 });
 
-// const countYear = computed(() => {
-//   return archiveStores.allArchives.reduce(
-//     (acc, item) => {
-//       const year = item.created_at_display?.year || "unknown";
-//       acc[year] = (acc[year] || 0) + 1;
-//       return acc;
-//     },
-//     {} as Record<string, number>,
-//   );
-// });
+const countYear = computed(() => {
+  return archiveStores.allArchives.reduce(
+    (acc, item) => {
+      const year = item.created_at_display?.year || "unknown";
+      acc[year] = (acc[year] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+});
 const countMonth = computed(() => {
   return archiveStores.allArchives.reduce(
     (acc, item) => {
