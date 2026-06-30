@@ -188,7 +188,7 @@ export const useArchiveStore = defineStore("archive", () => {
   }
   async function deletedPost(id: string) {
     loading.value = true;
-    ApiOfetch<ApiResponse<[]>>(ArchiveAPI(id), { query: { id }, method: "DELETE" }).then((res) => {
+    ApiOfetch<ApiResponse<[]>>(ArchiveAPI(id), { query: { id }, method: "DELETE" }).then(() => {
       allArchives.value = allArchives.value.filter((a) => a.id !== id);
       archiveDetails.value.delete(id);
       const byShortId = [...archiveDetails.value.entries()].find(([, v]) => v.id === id);
