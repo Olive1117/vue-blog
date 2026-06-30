@@ -49,6 +49,7 @@ import {
   Square,
   X,
   TrashX,
+  CalendarTime,
 } from "@vicons/tabler";
 interface IconProps {
   size?: string | number;
@@ -95,6 +96,7 @@ const iconMap: Record<string, Component> = {
   Square,
   X,
   TrashX,
+  CalendarTime,
 };
 
 const currentIcon = computed(() => iconMap[props.iconName]);

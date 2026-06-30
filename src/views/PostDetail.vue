@@ -1,17 +1,34 @@
 <template>
   <div class="post-detail flex flex-col px-[10vw] py-32 flex flex-col gap-4">
-    <p>{{ detail?.category }}</p>
-    <h1 class="text-3xl">{{ detail?.title }}</h1>
-    <p>{{ detail?.desc }}</p>
-    <p>
-      {{ detail?.created_at_display?.year }}年{{ detail?.created_at_display?.month }}月{{
-        detail?.created_at_display?.day
-      }}日
-    </p>
-    <p class="flex gap-2">
-      <span v-for="tag in detail?.tags">{{ tag }}</span>
-    </p>
-    <div id="mdd" class="mddd flex" ref="md">
+    <div class="flex justify-between items-end">
+      <div class="flex flex-col gap-4">
+        <h1 class="text-4xl font-bold">{{ detail?.title }}</h1>
+        <p class="text-lg">{{ detail?.desc }}</p>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1">
+            <DynamicIcon class="text-base" icon-name="CalendarTime" color="#e3769b" />{{ detail?.category }}
+            <time
+              :datetime="detail?.created_at_display?.year + '-' + detail?.created_at_display?.month + '-' + detail?.created_at_display?.day"
+              class="text-sm">
+              {{ detail?.created_at_display?.year }}年{{ detail?.created_at_display?.month }}月{{
+                detail?.created_at_display?.day
+              }}日
+            </time>
+          </div>
+          <span class="flex items-center gap-1">
+            <DynamicIcon class="text-base" icon-name="Books" color="#e3769b" />{{ detail?.category }}
+          </span>
+          <div class="flex items-center gap-1">
+            <DynamicIcon class="text-base" icon-name="Tag" color="#e3769b" />
+            <span v-for="tag in detail?.tags">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+      <div v-if="detail">
+        <button @click="router.push({name:'edit',params:{id:detail.short_id}})" class="flex items-center gap-1 p-2"><DynamicIcon icon-name="Pencil"/>编辑文章</button>
+      </div>
+    </div>
+    <div id="mdd" class="mddd flex border-t p-4 bg-white" ref="md">
       <MdPreview class="" :id="id" :model-value="text" previewTheme="github" />
     </div>
     <div class="h-50"></div>
@@ -24,10 +41,12 @@ import { useArchiveStore, type Archive } from "@/stores/archive";
 import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { onMounted, ref } from "vue";
+import DynamicIcon from "@/components/DynamicIcon.vue";
+import { useRouter } from "vue-router";
 const text = ref("加载中");
 const id = "preview-only";
 const detail = ref<Archive>();
-
+const router = useRouter();
 const props = defineProps<{ id: string }>();
 
 const archiveStores = useArchiveStore();
