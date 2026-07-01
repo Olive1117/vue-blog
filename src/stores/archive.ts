@@ -93,33 +93,38 @@ export const useArchiveStore = defineStore("archive", () => {
   };
   async function refreshArchives(page: number = 1, page_size: number = 10, query?: ArticleQuery) {
     loading.value = true;
-    try {
-      const res = await ApiOfetch<ApiResponse<PageResponse<ArticleVO>>>(ArchiveAPI(), {
-        query: { ...query, page: page, page_size: page_size },
+    ApiOfetch<ApiResponse<PageResponse<ArticleVO>>>(ArchiveAPI(), {
+      query: { ...query, page: page, page_size: page_size },
+    })
+      .then((res) => {
+        archives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
+        countArchive.value = res.data.total;
+        pageSize.value = res.data.page_size;
+      })
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      })
+      .finally(() => {
+        loading.value = false;
       });
-      archives.value = res.data.list.map((p) => formatArchive(toArchive(p)));
-      countArchive.value = res.data.total;
-      pageSize.value = res.data.page_size;
-    } catch (err) {
-      console.error(err);
-      // throw err
-    } finally {
-      loading.value = false;
-    }
   }
-  async function fetchArchiveDetail(identifier: string): Promise<Archive | undefined> {
+  async function fetchArchiveDetail(identifier: string) {
     loading.value = true;
-    try {
-      const res = await ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(identifier));
-      const fullPost = formatArchive(toArchive(res.data));
-      archiveDetails.value.set(fullPost.id, fullPost);
-      archiveDetails.value.set(fullPost.short_id, fullPost);
-      return fullPost;
-    } catch (err) {
-      console.error("获取详情失败", err);
-    } finally {
-      loading.value = false;
-    }
+    return ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(identifier))
+      .then((res) => {
+        const fullPost = formatArchive(toArchive(res.data));
+        archiveDetails.value.set(fullPost.id, fullPost);
+        archiveDetails.value.set(fullPost.short_id, fullPost);
+        return fullPost;
+      })
+      .catch((err) => {
+        console.error("获取详情失败", err);
+        throw err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
   }
   const setPageSize = (size: number) => {
     pageSize.value = size ?? 10;
@@ -131,6 +136,7 @@ export const useArchiveStore = defineStore("archive", () => {
       })
       .catch((err) => {
         console.error("获取文章聚合数据失败", err);
+        throw err;
       });
   }
   async function fetchAllArchives() {
@@ -141,12 +147,13 @@ export const useArchiveStore = defineStore("archive", () => {
       })
       .catch((err) => {
         console.error(err);
+        throw err;
       });
     loading.value = false;
   }
   async function updatePostDetail(id: string, data: Partial<ArticleVO>) {
     loading.value = true;
-    ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(id), {
+    return ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(id), {
       body: data,
       method: "PUT",
     })
@@ -157,11 +164,12 @@ export const useArchiveStore = defineStore("archive", () => {
         const allIndex = allArchives.value.findIndex((a) => a.id === id);
         if (allIndex !== -1) {
           allArchives.value[allIndex] = updatedArchive;
-          return updatedArchive;
         }
+        return updatedArchive;
       })
       .catch((err) => {
         console.error("更新文章失败", err);
+        throw err;
       })
       .finally(() => {
         loading.value = false;
@@ -169,7 +177,7 @@ export const useArchiveStore = defineStore("archive", () => {
   }
   async function createPostDetail(data: Partial<ArticleVO>) {
     loading.value = true;
-    ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(), {
+    return ApiOfetch<ApiResponse<ArticleVO>>(ArchiveAPI(), {
       body: data,
       method: "POST",
     })
@@ -178,9 +186,11 @@ export const useArchiveStore = defineStore("archive", () => {
         archiveDetails.value.set(createArchive.id, createArchive);
         archiveDetails.value.set(createArchive.short_id, createArchive);
         allArchives.value.push(createArchive);
+        return createArchive;
       })
       .catch((err) => {
         console.error("创建文章失败", err);
+        throw err;
       })
       .finally(() => {
         loading.value = false;
@@ -188,13 +198,21 @@ export const useArchiveStore = defineStore("archive", () => {
   }
   async function deletedPost(id: string) {
     loading.value = true;
-    ApiOfetch<ApiResponse<[]>>(ArchiveAPI(id), { query: { id }, method: "DELETE" }).then(() => {
-      allArchives.value = allArchives.value.filter((a) => a.id !== id);
-      archiveDetails.value.delete(id);
-      const byShortId = [...archiveDetails.value.entries()].find(([, v]) => v.id === id);
-      if (byShortId) archiveDetails.value.delete(byShortId[0]);
-    }).catch((err)=>{console.error("删除文章失败", err);
-    }).finally(()=>{loading.value = false});
+    return ApiOfetch<ApiResponse<[]>>(ArchiveAPI(id), { query: { id }, method: "DELETE" })
+      .then(() => {
+        allArchives.value = allArchives.value.filter((a) => a.id !== id);
+        archiveDetails.value.delete(id);
+        const byShortId = [...archiveDetails.value.entries()].find(([, v]) => v.id === id);
+        if (byShortId) archiveDetails.value.delete(byShortId[0]);
+        return true;
+      })
+      .catch((err) => {
+        console.error("删除文章失败", err);
+        throw err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
   }
   return {
     archives,

@@ -90,12 +90,14 @@ const categoryTagStores = useCategoryTagStore();
 const editorRef = useTemplateRef<ExposeParam>('editorRef');
 const handleSubmit = () => {
   if (isEdit.value) {
-    archiveStores.updatePostDetail(editingPost.value.id, editingPost.value)
-    archiveStores.fetchArchiveDetail(editingPost.value.id)
-    router.push({name: 'PostDetail', params:{id:editingPost.value.short_id}})
-  } else {
-    archiveStores.createPostDetail(editingPost.value)
-    router.push({name:'list'})
+    archiveStores.updatePostDetail(editingPost.value.id, editingPost.value).then(() => {
+      archiveStores.fetchArchiveDetail(editingPost.value.id)
+      router.push({ name: 'PostDetail', params: { id: editingPost.value.short_id } })
+      })
+    } else {
+    archiveStores.createPostDetail(editingPost.value).then(() => {
+      router.push({ name: 'list' })
+    })
   }
 }
 
