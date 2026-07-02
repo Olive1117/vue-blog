@@ -6,7 +6,7 @@
         <p class="text-6xl font-light">分类</p>
       </div>
       <ul class="flex flex-wrap justify-center gap-4">
-        <li v-for="(countCat, cat) in archiveStores.Stats?.total_by_category">
+        <li v-for="(countCat, cat) in articleStores.Stats?.total_by_category">
           <button class="text-xl flex gap-2 p-2 border rounded">
             <span>
               {{ cat }}
@@ -24,7 +24,7 @@
         <p class="text-6xl font-light">标签</p>
       </div>
       <ul class="flex flex-wrap justify-center gap-4">
-        <li v-for="(countTag, tag) in archiveStores.Stats?.total_by_tag">
+        <li v-for="(countTag, tag) in articleStores.Stats?.total_by_tag">
           <button class="text-xl flex gap-2 p-2 border rounded">
             <span>
               {{ tag }}
@@ -40,13 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import { useArchiveStore } from "@/stores/archive";
+import { useArticleStore } from "@/stores/article";
 import { onMounted } from "vue";
 
-const archiveStores = useArchiveStore();
+const articleStores = useArticleStore();
 
 onMounted(async()=>{
-  await archiveStores.fetchStats();
+  await articleStores.fetchStats();
 })
 </script>
 

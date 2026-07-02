@@ -22,7 +22,7 @@
         </button>
       </div>
     </div>
-    <section v-for="(groupedMonth, year) in archiveStores.groupedArchives" :key="year">
+    <section v-for="(groupedMonth, year) in archiveStores.groupedArticles" :key="year">
       <div class="flex justify-between">
         <h2
           class="flex items-start gap-4 text-7xl font-bold [-webkit-text-stroke:2px_#e3769b] text-transparent mask-b-from-0% mb-[-1.5rem]">
@@ -44,14 +44,14 @@
           {{ Number(month) }}月·{{ countMonth[month] }}篇
         </h3>
         <ul class="">
-          <li v-for="post in getMonthArchives(groupedDay)" :key="post.id">
+          <li v-for="post in getMonthArchives(groupedDay)" :key="post.short_id">
             <component :is="isDelete ? 'div' : 'RouterLink'" :to="isDelete ? undefined : '/post/' + post.short_id"
-              @click="isDelete ? toggleDeleteSelection(post.id) : undefined">
+              @click="isDelete ? toggleDeleteSelection(post.short_id) : undefined">
               <div class="flex items-center">
-                <DynamicIcon v-if="!pendingDeleteIds.has(post.id)" icon-name="Square"></DynamicIcon>
+                <DynamicIcon v-if="!pendingDeleteIds.has(post.short_id)" icon-name="Square"></DynamicIcon>
                 <DynamicIcon v-else icon-name="SquareX"></DynamicIcon>
                 <div class="flex-1 relative flex items-center">
-                  <div v-if="pendingDeleteIds.has(post.id)" class="absolute left-0 right-0 bg-black h-1"></div>
+                  <div v-if="pendingDeleteIds.has(post.short_id)" class="absolute left-0 right-0 bg-black h-1"></div>
                   <p class="flex items-center gap-4 p-2 whitespace-nowrap w-full">
                     <!-- 时间 -->
                     <span class="text-xl"> {{ post.created_at_display?.month }}.{{ post.created_at_display?.day }}
@@ -93,11 +93,11 @@
 
 <script setup lang="ts">
 import DynamicIcon from "@/components/DynamicIcon.vue";
-import { useArchiveStore, type Archive } from "@/stores/archive";
+import { useArticleStore, type ArticleDisplay } from "@/stores/article";
 import { computed, onMounted, ref } from "vue";
 
-const archiveStores = useArchiveStore();
-const getMonthArchives = (days: Record<string, Archive[]>) => {
+const archiveStores = useArticleStore();
+const getMonthArchives = (days: Record<string, ArticleDisplay[]>) => {
   const archives = [];
   for (const day of Object.keys(days).sort((a, b) => Number(b) - Number(a))) {
     archives.push(...days[day]);
@@ -105,11 +105,11 @@ const getMonthArchives = (days: Record<string, Archive[]>) => {
   return archives;
 };
 onMounted(async () => {
-  await archiveStores.fetchAllArchives();
+  await archiveStores.fetchAllArticles();
 });
 
 const countYear = computed(() => {
-  return archiveStores.allArchives.reduce(
+  return archiveStores.allArticles.reduce(
     (acc, item) => {
       const year = item.created_at_display?.year || "unknown";
       acc[year] = (acc[year] || 0) + 1;
@@ -119,7 +119,7 @@ const countYear = computed(() => {
   );
 });
 const countMonth = computed(() => {
-  return archiveStores.allArchives.reduce(
+  return archiveStores.allArticles.reduce(
     (acc, item) => {
       const month = item.created_at_display?.month || "unknown";
       acc[month] = (acc[month] || 0) + 1;
@@ -142,7 +142,6 @@ const toggleDeleteSelection = (id: string) => {
     pendingDeleteIds.value.add(id)
   }
   console.log(pendingDeleteIds.value);
-
 }
 const confirmBatchDelete = async () => {
   if (pendingDeleteIds.value.size === 0) return
@@ -156,7 +155,7 @@ const confirmBatchDelete = async () => {
   if (failed.length > 0) {
     console.error('部分删除失败:', failed)
   }
-  await archiveStores.fetchAllArchives()
+  await archiveStores.fetchAllArticles()
   pendingDeleteIds.value.clear()
 }
 </script>

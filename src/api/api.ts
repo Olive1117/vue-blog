@@ -11,8 +11,7 @@ export interface AuthResponse {
   token_type: string;
 }
 
-export interface ArticleVO {
-  id: string;
+export interface ApiArticle {
   title: string;
   desc: string;
   content: string;
@@ -36,17 +35,17 @@ export interface ArticleQuery {
   state?: number;
 }
 
-export interface CategoryDTO {
+export interface ApiCategory {
   id: string;
   name: string;
   state: number;
 }
-export interface TagDTO {
+export interface ApiTag {
   id: string;
   name: string;
   state: number;
 }
-export interface UserDTO {
+export interface ApiUser {
   // 账号核心
   id: string;
   username: string;
@@ -86,7 +85,7 @@ export interface RegisterRequest {
   birthdate: string;
 }
 
-export interface ArticleStatsDTO {
+export interface ApiArticleStats {
   total: number;
   total_by_category: { string: number };
   total_by_tag: { string: number };

@@ -56,8 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ArticleVO } from '@/api/interface';
-import { useArchiveStore } from '@/stores/archive';
+import type { ApiArticle } from '@/api';
+import { useArticleStore } from '@/stores/article';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import { MdEditor, type ExposeParam } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
@@ -68,8 +68,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const props = defineProps<{ id?: string }>()
-const defaultPost = (): ArticleVO => ({
-  id: "0",
+const defaultPost = (): ApiArticle => ({
   title: '',
   desc: '',
   content: '',
@@ -83,19 +82,19 @@ const defaultPost = (): ArticleVO => ({
   category: '',
   tags: []
 })
-const editingPost = ref<ArticleVO>(defaultPost())
+const editingPost = ref<ApiArticle>(defaultPost())
 const layoutStores = useLayoutStore();
-const archiveStores = useArchiveStore();
+const articleStores = useArticleStore();
 const categoryTagStores = useCategoryTagStore();
 const editorRef = useTemplateRef<ExposeParam>('editorRef');
 const handleSubmit = () => {
   if (isEdit.value) {
-    archiveStores.updatePostDetail(editingPost.value.id, editingPost.value).then(() => {
-      archiveStores.fetchArchiveDetail(editingPost.value.id)
+    articleStores.updatePostDetail(editingPost.value.short_id, editingPost.value).then(() => {
+      articleStores.fetchArticleDetail(editingPost.value.short_id)
       router.push({ name: 'PostDetail', params: { id: editingPost.value.short_id } })
       })
     } else {
-    archiveStores.createPostDetail(editingPost.value).then(() => {
+    articleStores.createPostDetail(editingPost.value).then(() => {
       router.push({ name: 'list' })
     })
   }
@@ -134,7 +133,7 @@ watch(() => props.id, () => {
 function initPage() {
   if (props.id) {
     // 编辑模式：加载文章数据
-    archiveStores.fetchArchiveDetail(props.id).then((res) => { if (res) editingPost.value = res })
+    articleStores.fetchArticleDetail(props.id).then((res) => { if (res) editingPost.value = res })
   } else {
     // 新建模式：重置表单
     editingPost.value = defaultPost()

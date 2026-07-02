@@ -7,7 +7,7 @@
         <p class="text-lg">{{ detail?.desc }}</p>
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-1">
-            <DynamicIcon class="text-base" icon-name="CalendarTime" color="#e3769b" />{{ detail?.category }}
+            <DynamicIcon class="text-base" icon-name="CalendarTime" color="#e3769b" />
             <time
               :datetime="detail?.created_at_display?.year + '-' + detail?.created_at_display?.month + '-' + detail?.created_at_display?.day"
               class="text-sm">
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { useArchiveStore, type Archive } from "@/stores/archive";
+import { useArticleStore, type ArticleDisplay } from "@/stores/article";
 import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { onMounted, ref } from "vue";
@@ -46,18 +46,18 @@ import DynamicIcon from "@/components/DynamicIcon.vue";
 import { RouterLink } from "vue-router";
 const text = ref("加载中");
 const id = "preview-only";
-const detail = ref<Archive>();
+const detail = ref<ArticleDisplay>();
 const props = defineProps<{ id: string }>();
 
-const archiveStores = useArchiveStore();
-onMounted(async () => {
-  const cached = archiveStores.archiveDetails.get(props.id);
+const articleStores = useArticleStore();
+onMounted(() => {
+  const cached = articleStores.articleDetails.get(props.id);
   if (cached) {
     detail.value = cached;
     text.value = detail.value.content;
     return;
   }
-  await archiveStores.fetchArchiveDetail(props.id).then((res) => {
+  articleStores.fetchArticleDetail(props.id).then((res) => {
     if (res) {
       detail.value = res;
       text.value = detail.value.content;

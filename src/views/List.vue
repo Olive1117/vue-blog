@@ -36,7 +36,7 @@
           <ul v-show="isTagList" class="flex gap-2 flex-wrap">
             <li class="border rounded-lg border-olive-400 font-light text-base py-[0.5] px-2 flex gap-2 text-[#e3769b]"
               :class="{ 'bg-[#fee8ee]': currentTag.includes(name) }"
-              v-for="name in Object.keys(archiveStores.Stats?.total_by_tag || [])" :key="name">
+              v-for="name in Object.keys(articleStores.Stats?.total_by_tag || [])" :key="name">
               <button class="" @click="toggleTag(name)">
                 <span>{{ name }}</span>
               </button>
@@ -49,17 +49,17 @@
     <!-- 文章列表栏 -->
     <ul class="flex flex-col tracking-[0.15rem]">
       <li class="relative border-t-1 border-olive-400/70 last:border-b"
-        v-for="archives in archiveStores.archivesByUpdateTime" :key="archives.id">
-        <RouterLink class="h-full w-full" :to="'/post/' + archives.short_id">
+        v-for="articles in articleStores.articlesByUpdateTime" :key="articles.short_id">
+        <RouterLink class="h-full w-full" :to="'/post/' + articles.short_id">
           <div class="p-4 flex gap-8">
             <!-- 左侧创建时间 -->
             <div class="flex flex-col items-center justify-between gap-1">
               <div class="flex flex-col items-center justify-start gap-1">
                 <time class="text-base text-[#e3769b]"
-                  :datetime="archives.created_at_display?.month + '-' + archives.created_at_display?.day">{{
-                    archives.created_at_display?.month }}.{{ archives.created_at_display?.day }}</time>
-                <time class="text-xs font-light" :datetime="archives.created_at_display?.year">{{
-                  archives.created_at_display?.year
+                  :datetime="articles.created_at_display?.month + '-' + articles.created_at_display?.day">{{
+                    articles.created_at_display?.month }}.{{ articles.created_at_display?.day }}</time>
+                <time class="text-xs font-light" :datetime="articles.created_at_display?.year">{{
+                  articles.created_at_display?.year
                 }}</time>
               </div>
               <DynamicIcon icon-name="Clock" class="text-xl" color="#e3769b" />
@@ -67,25 +67,25 @@
             <!-- 右侧文章详情 -->
             <div class="flex justify-between items-end w-full">
               <div class="flex flex-col items-start gap-1">
-                <p class="text-2xl font-medium">{{ archives.title }}</p>
+                <p class="text-2xl font-medium">{{ articles.title }}</p>
                 <p class="text-xs flex gap-2 whitespace-nowrap flex-wrap ">
                   <span class="flex items-center">
                     <DynamicIcon class="text-base" icon-name="ListSearch" color="#e3769b" />
-                    <span class="px-2">总字数&nbsp;{{ archives.word_count }}</span>
+                    <span class="px-2">总字数&nbsp;{{ articles.word_count }}</span>
                   </span>
                   <span class="flex items-center">
                     <DynamicIcon class="text-base" icon-name="Books" color="#e3769b" />
-                    <span class="px-2" @click.prevent.stop="toggleCate(archives.category)">{{
-                      archives.category
+                    <span class="px-2" @click.prevent.stop="toggleCate(articles.category)">{{
+                      articles.category
                     }}</span>
                   </span>
                   <span class="text-xs flex items-center flex-wrap">
                     <DynamicIcon class="text-base" icon-name="Tag" color="#e3769b" />
                     <span @click.prevent.stop="toggleTag(tag)" class="border-r border-olive-600 last:border-none px-2"
-                      v-for="tag in archives.tags">{{ tag }}</span>
+                      v-for="tag in articles.tags">{{ tag }}</span>
                   </span>
                 </p>
-                <p class="text-sm font-light">{{ archives.desc }}</p>
+                <p class="text-sm font-light">{{ articles.desc }}</p>
               </div>
               <!-- <div class="flex h-full">收藏</div> -->
             </div>
@@ -106,18 +106,18 @@
 </template>
 
 <script setup lang="ts">
-import type { ArticleQuery } from "@/api/interface";
+import type { ArticleQuery } from "@/api";
 import DynamicIcon from "@/components/DynamicIcon.vue";
-import { useArchiveStore } from "@/stores/archive";
+import { useArticleStore } from "@/stores/article";
 import { useRouteQuery } from "@vueuse/router";
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
 // 数据加载
-const archiveStores = useArchiveStore();
+const articleStores = useArticleStore();
 
 // 分类标签列表逻辑
-const cateList = computed(() => ({ 全部: archiveStores.Stats?.total, ...archiveStores.Stats?.total_by_category }));
+const cateList = computed(() => ({ 全部: articleStores.Stats?.total, ...articleStores.Stats?.total_by_category }));
 const currentCate = useRouteQuery("category", null, {
   transform: (v) => (v === null ? null : String(v)), // 保持 null 或字符串
 });
@@ -145,7 +145,7 @@ const onTagList = () => {
 };
 
 // 文章列表逻辑
-const page_size = computed(() => archiveStores.pageSize);
+const page_size = computed(() => articleStores.pageSize);
 const postQuery = computed<ArticleQuery>(() => ({
   category: currentCate.value ?? undefined,
   tags: currentTag.value,
@@ -158,7 +158,7 @@ const JUMP_FORWARD = -2;
 const JUMP_SIZE = 5;
 const maxVisiblePages = ref<number>(9);
 const currentPage = useRouteQuery("page", 1, { transform: Number });
-const totalPages = computed(() => archiveStores.totalPages);
+const totalPages = computed(() => articleStores.totalPages);
 const generatePageList = (curPage: number, totPage: number): number[] => {
   const max = maxVisiblePages.value < 3 ? 3 : maxVisiblePages.value;
   if (totPage <= max) {
@@ -203,13 +203,13 @@ const togglePage = (p: number) => {
 
 // 文章列表响应
 watch([currentCate, currentTag, currentPage, page_size], () => {
-  archiveStores.refreshArchives(currentPage.value, page_size.value, postQuery.value);
+  articleStores.refreshArticles(currentPage.value, page_size.value, postQuery.value);
 });
 onMounted(async () => {
-  await archiveStores.refreshArchives(currentPage.value, page_size.value, postQuery.value);
+  await articleStores.refreshArticles(currentPage.value, page_size.value, postQuery.value);
   // await categoryTagStores.fetchCategory();
   // await categoryTagStores.fetchTag();
-  await archiveStores.fetchStats();
+  await articleStores.fetchStats();
 });
 
 // 删除逻辑

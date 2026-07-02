@@ -1,5 +1,4 @@
-import type { ApiResponse } from "@/api/common";
-import type { AuthResponse } from "@/api/interface";
+import type { AuthResponse, ApiResponse } from "@/api";
 import { ApiOfetch } from "@/config/ofetch";
 import { defineStore } from "pinia";
 import { ref } from "vue";
